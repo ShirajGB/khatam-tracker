@@ -251,6 +251,7 @@ td{padding:9px 7px;vertical-align:middle}
 var SB_URL='https://edghxmezscfbcaeaxuiu.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkZ2h4bWV6c2NmYmNhZWF4dWl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNTc3NDgsImV4cCI6MjA5ODczMzc0OH0.PX3Gi4fIeNlyXmu9SEeFEdYxKzbd3DTVfxaI1kbih_U';
 var SAJDAH={9:'S',13:'S',14:'S',15:'S',16:'S',17:'S',19:'SS',21:'S',23:'S',24:'S',27:'S',30:'SS'};
+var PROPHET='Hadhrat Muhammad Mustafa Sallallahu Alayhi Wassalam';
 var DECEASED=[
   'Haji Gulam Bapu',
   'Hajiyani Zubeda Laheri',
@@ -262,7 +263,8 @@ var DECEASED=[
   'Hajiyani Ayesha Bapu',
   'Haji Ismail Mohmed Bapu',
   'Haji Adam Issa Sheriwala',
-  'Haji Adam Khankara'
+  'Haji Adam Khankara',
+  'All Dunya Family Marhoomins'
 ];
 
 var sb=window.supabase.createClient(SB_URL,SB_KEY);
@@ -270,10 +272,15 @@ var kh=394,mb=[],cp={},rm={},allComps=[],activeTab='week';
 
 /* MEMORIAL TICKER */
 function buildMemorial(){
-  var seg=DECEASED.map(function(n){
+  var propSeg='<span class="memorial-seg">'
+    +'<span class="lbl" style="color:#b8960c">&#9632;</span>'
+    +'<span class="name" style="color:#FFD700;font-weight:800;font-size:.8rem">'+PROPHET+'</span>'
+    +'<span class="dot" style="color:#b8960c">&#10022;</span></span>';
+  var decSeg=DECEASED.map(function(n){
     return '<span class="memorial-seg"><span class="lbl">Al-Fatiha</span><span class="name">'+n+'</span><span class="dot">&#10022;</span></span>';
   }).join('');
-  document.getElementById('memorial-track').innerHTML=seg+seg;
+  var full=propSeg+decSeg;
+  document.getElementById('memorial-track').innerHTML=full+full;
 }
 
 /* TIME */
@@ -328,13 +335,13 @@ function waUrl(phone,name,sipara,isSun){
       +'A new week of Khatam has begun, Khatam No.'+kh+'. Your sipara is Sipara '+sipara+'.\n\n'
       +main+' is eagerly awaiting the blessings of your recitation and is relying on you insha\u2019Allah \uD83E\uDD32\n\n'
       +others+' and our other beloved are also hungry and craving for these rewards from Allah.\n\n'
-      +'May Allah make it easy and accept from us all. JazakAllah Khair \uD83D\uDC9A';
+      +'May Allah make it easy, accept from us all, and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
   } else {
     msg='Assalamu Alaikum '+name+' \uD83D\uDC9A\n\n'
       +'A gentle reminder \u2014 Sipara '+sipara+' for Khatam No.'+kh+' by tonight insha\u2019Allah.\n\n'
       +main+' is striving for these blessings this '+day+' and is relying on you to complete it \uD83E\uDD32\n\n'
       +others+' and our other beloved are also hungry and craving for the rewards of this Khatam.\n\n'
-      +'Our beloved souls cannot afford to miss these blessings \u2014 may Allah accept from us all and grant them Jannah Al-Firdaus. JazakAllah Khair \uD83C\uDF39';
+      +'May Allah accept from us all, grant our beloved Jannah Al-Firdaus, and shower His blessings upon '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83C\uDF39';
   }
   return'https://wa.me/'+np+'?text='+encodeURIComponent(msg);
 }
