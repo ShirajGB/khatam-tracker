@@ -295,12 +295,12 @@ function isWednesdayEvening(){var l=londonNow();return l.getDay()===3&&l.getHour
 function isChaseDay(){return isSunday()||isWednesdayEvening();}
 function getCountdownData(){
   var l=londonNow(),day=l.getDay(),hr=l.getHours(),mn=l.getMinutes();
-  var now=day*1440+hr*60+mn,wed=3*1440+18*60,diff=wed-now;
+  var now=day*1440+hr*60+mn,target=3*1440+23*60+59,diff=target-now;
   if(diff<0)diff+=7*1440;
-  if(day===3&&hr>=18)return{text:'Deadline passed',cls:'cd-done'};
+  if(diff<=1)return{text:'Deadline passed',cls:'cd-done'};
   var d=Math.floor(diff/1440),h=Math.floor((diff%1440)/60);
-  if(d===0&&h<=6)return{text:h+'h left',cls:'cd-urgent'};
-  if(d===0)return{text:h+'h left',cls:'cd-warn'};
+  if(d===0&&h<=3)return{text:h+'h left ⚡',cls:'cd-urgent'};
+  if(d===0&&h<=12)return{text:h+'h left',cls:'cd-warn'};
   return{text:d+' day'+(d>1?'s':'')+' left',cls:'cd-ok'};
 }
 function dayName(){var d=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];return d[londonNow().getDay()];}
@@ -308,8 +308,8 @@ function dayName(){var d=['Sunday','Monday','Tuesday','Wednesday','Thursday','Fr
 /* CALCULATIONS */
 function sp(p){return((kh-1+p-1)%30)+1;}
 function weekRange(k){
-  var b=new Date(2026,5,9),s=new Date(b.getTime()+(k-391)*7*864e5),e=new Date(s.getTime()+6*864e5);
-  var f=function(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});};
+  var b=new Date(2026,7,18),s=new Date(b.getTime()+(k-394)*7*864e5),e=new Date(s.getTime()+7*864e5);
+  var f=function(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});};
   return f(s)+' - '+f(e);
 }
 function getStreak(id){
@@ -447,14 +447,14 @@ function renderChase(){
   if(!pending.length){
     bannerEl.innerHTML='<div class="chase-banner chase-all-done"><h2>\uD83C\uDF1F All '+mb.length+' Siparas Complete!</h2><p>May Allah accept and grant blessings to our beloved. \u0622\u0645\u06CC\u0646</p></div>';
   } else if(isWed){
-    bannerEl.innerHTML='<div class="chase-banner chase-wed"><h2>\uD83D\uDD14 Wednesday Reminders</h2><p>'+pending.length+' member'+(pending.length>1?'s':'')+' outstanding \u2014 open WhatsApp for each one below</p></div>';
+    bannerEl.innerHTML='<div class="chase-banner chase-wed"><h2>\uD83D\uDD14 Wednesday Reminders</h2><p>'+pending.length+' member'+(pending.length>1?'s':'')+' outstanding \u2014 deadline tonight 11:59pm</p></div>';
     pendTitle.textContent='\uD83D\uDD14 Still to complete';
   } else if(isSun){
     bannerEl.innerHTML='<div class="chase-banner chase-sun"><h2>\uD83C\uDF38 New Week \u2014 Send Reminders</h2><p>A gentle nudge to get everyone started insha\u2019Allah</p></div>';
     pendTitle.textContent='\uD83C\uDF38 Send week-start reminder';
   } else {
     var dl=londonNow(),dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    bannerEl.innerHTML='<div class="chase-idle"><p style="color:#888">Reminders active on <strong>Sunday</strong> and <strong>Wednesday 6pm</strong></p><p style="color:#2d8a5e;font-weight:600;margin-top:5px">Today is '+dn[dl.getDay()]+' \u2014 '+pending.length+' still to complete</p></div>';
+    bannerEl.innerHTML='<div class="chase-idle"><p style="color:#888">Reminders sent <strong>Sunday</strong> &amp; <strong>Wednesday 6pm</strong> &mdash; deadline <strong>Wed 11:59pm</strong></p><p style="color:#2d8a5e;font-weight:600;margin-top:5px">Today is '+dn[dl.getDay()]+' \u2014 '+pending.length+' still to complete</p></div>';
   }
 
   if(pending.length){
