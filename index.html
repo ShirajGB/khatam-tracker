@@ -135,6 +135,28 @@ td{padding:9px 7px;vertical-align:middle}
 .empty{text-align:center;padding:16px;color:#aaa;font-size:.82rem}
 .toast{position:fixed;bottom:122px;left:50%;transform:translateX(-50%) translateY(60px);background:#1b4332;color:#fff;padding:9px 18px;border-radius:18px;font-size:.8rem;font-weight:600;transition:transform .28s ease;z-index:200;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.on{transform:translateX(-50%) translateY(0)}
+
+/* ══ TUESDAY THEME ══ */
+.tue-wrap{display:none}
+.tue-header-override{background:linear-gradient(135deg,#0d1f0d,#1a3a1a,#2a5a1a) !important;border-bottom:3px solid #c9a84c}
+.tue-top{background:linear-gradient(180deg,#0d1f0d 0%,#1a3a1a 60%,#0d2818 100%);color:#FFD700;text-align:center;padding:18px 16px 14px;position:relative;overflow:hidden}
+.tue-top::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.15),transparent 70%);pointer-events:none}
+.tue-bismillah{font-family:serif;font-size:1.3rem;color:rgba(255,215,0,.7);margin-bottom:8px;direction:rtl;letter-spacing:2px}
+.tue-title{font-size:1.5rem;font-weight:800;color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,.5);margin-bottom:5px}
+.tue-sub{font-size:.78rem;color:#a8d5b5;margin-bottom:10px;letter-spacing:.3px}
+.tue-name{font-size:1rem;font-weight:700;color:#fff;margin:8px 0 4px;padding:8px 16px;background:rgba(255,215,0,.12);border-radius:20px;border:1px solid rgba(255,215,0,.3);display:inline-block}
+.tue-salawat{font-family:serif;font-size:1.1rem;color:#c9a84c;margin-top:8px;direction:rtl}
+.tue-stars{font-size:.9rem;letter-spacing:4px;color:rgba(255,215,0,.6);margin-bottom:6px}
+.tue-mosque-wrap{position:relative;max-height:240px;overflow:hidden}
+.tue-mosque-wrap img{width:100%;height:240px;object-fit:cover;object-position:center 30%;display:block;filter:brightness(.92) saturate(1.1)}
+.tue-mosque-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,31,13,.3) 0%,transparent 40%,rgba(13,31,13,.5) 100%)}
+.tue-mosque-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#FFD700;font-size:.68rem;text-align:center;padding:16px 12px 8px;font-style:italic;letter-spacing:.6px}
+.tue-divider{height:3px;background:linear-gradient(90deg,transparent,#c9a84c,#FFD700,#c9a84c,transparent)}
+.tue-bar-override{background:linear-gradient(135deg,#0d2010,#1a3a1a) !important;border-bottom:1px solid rgba(201,168,76,.3)}
+.tue-bar-override .lbl{color:rgba(201,168,76,.7) !important}
+.tue-bar-override .val{color:#FFD700 !important}
+.tue-bar-override .wk{color:#a8d5b5 !important}
+.tue-bar-override .countdown{background:rgba(201,168,76,.2) !important;color:#FFD700 !important}
 </style>
 </head>
 <body>
@@ -146,6 +168,27 @@ td{padding:9px 7px;vertical-align:middle}
 
 <div class="memorial">
   <div class="memorial-track" id="memorial-track"></div>
+</div>
+
+<!-- TUESDAY COMMEMORATIVE THEME -->
+<div class="tue-wrap" id="tue-wrap">
+  <div class="tue-top">
+    <div class="tue-bismillah">&#xFDFD;</div>
+    <div class="tue-stars">&#10022; &#10022; &#10022;</div>
+    <div class="tue-title">Blessed Tuesday &#10024;</div>
+    <div class="tue-sub">In commemoration of the birth &amp; life of</div>
+    <div class="tue-name">Hadhrat Muhammad Mustafa &#9732;</div>
+    <div class="tue-salawat">&#x635;&#x644;&#x649; &#x627;&#x644;&#x644;&#x647; &#x639;&#x644;&#x64A;&#x647; &#x648;&#x633;&#x644;&#x645;</div>
+    <div class="tue-stars" style="margin-top:10px">&#10022; &#10022; &#10022;</div>
+  </div>
+  <div class="tue-mosque-wrap">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Al-Masjid_Al-Nabawi_Photo_by_Syed_Asim_Shah.jpg/1280px-Al-Masjid_Al-Nabawi_Photo_by_Syed_Asim_Shah.jpg"
+         alt="Al-Masjid an-Nabawi, Madinah"
+         onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Masjid_Al_Nabawi.jpg/1280px-Masjid_Al_Nabawi.jpg'">
+    <div class="tue-mosque-overlay"></div>
+    <div class="tue-mosque-caption">&#9652; Al-Masjid an-Nabawi &bull; Madinah al-Munawwarah &#9652;</div>
+  </div>
+  <div class="tue-divider"></div>
 </div>
 
 <div class="bar">
@@ -510,6 +553,17 @@ window.markSent=function(id){
   setTimeout(function(){if(activeTab==='chase')renderChase();},500);
 };
 
+
+/* TUESDAY THEME */
+function isTuesday(){return londonNow().getDay()===2;}
+function applyTuesdayTheme(){
+  if(!isTuesday())return;
+  document.getElementById('tue-wrap').style.display='block';
+  document.querySelector('.hdr').classList.add('tue-header-override');
+  document.querySelector('.bar').classList.add('tue-bar-override');
+  document.querySelector('.memorial').style.borderBottom='1px solid rgba(201,168,76,.3)';
+}
+
 /* SEQUENTIAL REMINDER FLOW */
 var rmQueue=[],rmIdx=0;
 
@@ -699,6 +753,7 @@ function subscribe(){
 
 /* INIT */
 buildMemorial();
+applyTuesdayTheme();
 sb.from('qk_config').select('khatam_number').eq('id',1).single().then(function(r){
   if(r.data)kh=r.data.khatam_number;
   return sb.from('qk_members').select('*').order('position');
