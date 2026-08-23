@@ -7,29 +7,50 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;min-height:100vh;padding-bottom:114px}
-/* HEADER */
 .hdr{background:linear-gradient(135deg,#1b6b45,#2d8a5e);color:#fff;padding:16px;text-align:center}
 .hdr h1{font-size:1.2rem;font-weight:700}
-.hdr p{font-size:.72rem;opacity:.75;margin-top:4px}
+.hdr p{font-size:.72rem;opacity:.75;margin-top:3px}
+/* MEMORIAL TICKER */
+.memorial{background:#0d3320;padding:8px 0;overflow:hidden;position:relative}
+.memorial::before,.memorial::after{content:'';position:absolute;top:0;bottom:0;width:30px;z-index:2}
+.memorial::before{left:0;background:linear-gradient(90deg,#0d3320,transparent)}
+.memorial::after{right:0;background:linear-gradient(-90deg,#0d3320,transparent)}
+.memorial-track{display:flex;width:max-content;animation:ticker 35s linear infinite}
+.memorial-track:hover{animation-play-state:paused}
+.memorial-seg{white-space:nowrap;padding:0 40px;font-size:.72rem;color:#7ec8a0;letter-spacing:.3px}
+.memorial-seg .lbl{color:#3d8f60;font-size:.65rem;text-transform:uppercase;margin-right:6px}
+.memorial-seg .name{color:#a8d5b5;font-weight:600}
+.memorial-seg .dot{color:#3d8f60;margin:0 8px}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 /* INFO BAR */
 .bar{background:#134d32;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
 .bar .lbl{font-size:.62rem;opacity:.6;text-transform:uppercase;letter-spacing:.4px}
 .bar .val{font-size:1.4rem;font-weight:800;line-height:1}
-.bar .wk{font-size:.8rem;font-weight:500}
+.bar .wk{font-size:.78rem;font-weight:500}
+.countdown{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:10px;font-size:.72rem;font-weight:700;margin-top:4px}
+.cd-ok{background:rgba(82,183,136,.2);color:#7ec8a0}
+.cd-warn{background:rgba(249,168,37,.2);color:#fbc02d}
+.cd-urgent{background:rgba(224,123,57,.3);color:#ff8c42;animation:pulse-cd 1.5s ease infinite}
+.cd-done{background:rgba(224,123,57,.15);color:#ff8c42}
+@keyframes pulse-cd{0%,100%{opacity:1}50%{opacity:.5}}
 /* PROGRESS */
 .prog{background:#e8f5e9;padding:9px 16px;border-bottom:1px solid #c8e6c9}
-.pb{height:7px;background:#c8e6c9;border-radius:4px;overflow:hidden;margin-bottom:4px}
+.pb{height:7px;background:#c8e6c9;border-radius:4px;overflow:hidden;margin-bottom:5px}
 .pf{height:100%;background:linear-gradient(90deg,#2d8a5e,#52b788);border-radius:4px;transition:width .4s}
+.prog-row{display:flex;justify-content:space-between;align-items:center}
 .pt{font-size:.74rem;color:#2d6a4f;font-weight:600}
-/* BOTTOM NAV */
+/* COMPLETION FEED */
+.feed{background:#f0fff6;border-bottom:1px solid #c8e6c9;padding:7px 16px;font-size:.74rem;color:#2d6a4f;display:none;align-items:center;gap:7px}
+.feed.on{display:flex}
+.feed-dot{width:8px;height:8px;background:#52b788;border-radius:50%;flex-shrink:0;animation:pulse-cd 1s ease}
+/* NAV */
 .nav{position:fixed;bottom:50px;left:0;right:0;background:#fff;border-top:1px solid #e0e0e0;display:flex;z-index:50;border-radius:12px 12px 0 0;box-shadow:0 -2px 10px rgba(0,0,0,.1)}
-.nav button{flex:1;padding:10px 4px 8px;background:none;border:none;font-size:.62rem;font-weight:600;color:#999;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent}
-.nav button .ic{font-size:1.25rem;line-height:1}
+.nav button{flex:1;padding:10px 4px 8px;background:none;border:none;font-size:.6rem;font-weight:600;color:#999;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent;position:relative}
+.nav button .ic{font-size:1.2rem;line-height:1}
 .nav button.on{color:#2d8a5e}
-.nav button.on .ic{filter:drop-shadow(0 0 2px rgba(45,138,94,.4))}
-.nav button.alert-tab{color:#e07b39}
-.nav button.alert-tab .ic{animation:ring .8s ease infinite}
-@keyframes ring{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+.nav button.alert-tab .ic{animation:ring .9s ease infinite}
+.nav button .badge{position:absolute;top:6px;right:calc(50% - 18px);background:#e07b39;color:#fff;font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
+@keyframes ring{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(6deg)}}
 /* PANELS */
 .panel{display:none;padding:10px}
 .panel.on{display:block}
@@ -38,90 +59,128 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;ove
 thead tr{background:#2d8a5e;color:#fff}
 th{padding:9px 7px;font-size:.68rem;font-weight:600;text-align:left;text-transform:uppercase}
 th.c{text-align:center}
-tbody tr{border-bottom:1px solid #f0f0f0}
+tbody tr{border-bottom:1px solid #f0f0f0;transition:background .2s}
 tbody tr:last-child{border-bottom:none}
 tbody tr.ok{background:#f0fff6}
+tbody tr.early-row{background:linear-gradient(90deg,#fffde7,#f0fff6)}
 td{padding:9px 7px;vertical-align:middle}
 .no{font-size:.7rem;color:#ccc;font-weight:600}
 .nm{font-size:.86rem;font-weight:600;color:#1b4332}
+.streak{display:inline-block;font-size:.62rem;font-weight:700;margin-left:5px;vertical-align:middle}
+.streak-fire{color:#ff6b35}
+.streak-gold{color:#f9a825}
+.early-star{font-size:.75rem;margin-left:3px;vertical-align:middle}
 .sn{font-size:1.1rem;font-weight:800;color:#2d8a5e;display:block}
 .sb{display:inline-block;font-size:.58rem;color:#fff;background:#e07b39;border-radius:3px;padding:1px 3px;margin-top:1px;font-weight:700}
 .tc{text-align:center}
 /* BUTTONS */
-.btn{display:inline-block;padding:7px 11px;border-radius:16px;border:2px solid #2d8a5e;background:#fff;color:#2d8a5e;font-size:.74rem;font-weight:600;cursor:pointer;min-width:78px;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.btn{display:inline-block;padding:7px 11px;border-radius:16px;border:2px solid #2d8a5e;background:#fff;color:#2d8a5e;font-size:.74rem;font-weight:600;cursor:pointer;min-width:78px;-webkit-tap-highlight-color:transparent}
 .btn.done{background:#2d8a5e;color:#fff}
 .btn.ld{opacity:.45;pointer-events:none}
-.wa-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:16px;background:#25D366;color:#fff;border:none;font-size:.76rem;font-weight:700;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent}
-.wa-btn svg{width:15px;height:15px;fill:#fff}
-.sent-btn{display:inline-block;padding:7px 11px;border-radius:16px;background:#e8f5e9;color:#2d8a5e;border:1.5px solid #c8e6c9;font-size:.72rem;font-weight:600;cursor:pointer}
-/* CHASE PANEL */
-.chase-banner{background:linear-gradient(135deg,#e07b39,#c85a1e);color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center}
-.chase-banner h2{font-size:1rem;font-weight:700;margin-bottom:3px}
-.chase-banner p{font-size:.76rem;opacity:.85}
-.chase-idle{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center;border:1.5px dashed #c8e6c9}
-.chase-idle p{font-size:.82rem;color:#888}
-.chase-idle .ctime{font-size:1rem;font-weight:700;color:#2d8a5e;margin-top:5px}
+/* CHASE */
+.chase-banner{border-radius:10px;padding:14px 16px;margin-bottom:10px;text-align:center}
+.chase-wed{background:linear-gradient(135deg,#e07b39,#c85a1e);color:#fff}
+.chase-sun{background:linear-gradient(135deg,#2d8a5e,#1b6b45);color:#fff}
+.chase-all-done{background:#f0fff6;border:1.5px solid #c8e6c9;color:#2d6a4f}
+.chase-idle{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:10px;text-align:center;border:1.5px dashed #c8e6c9}
+.chase-banner h2{font-size:1rem;font-weight:700;margin-bottom:4px}
+.chase-banner p{font-size:.74rem;opacity:.88;line-height:1.4}
 .card{background:#fff;border-radius:10px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
-.card h3{font-size:.8rem;color:#888;font-weight:600;text-transform:uppercase;margin-bottom:9px}
-.chase-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f5f5f5}
+.card h3{font-size:.75rem;color:#888;font-weight:600;text-transform:uppercase;margin-bottom:8px}
+.chase-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f5f5f5;gap:8px}
 .chase-row:last-child{border-bottom:none}
-.chase-name{font-size:.88rem;font-weight:600;color:#1b4332}
-.chase-sip{font-size:.75rem;color:#888;margin-top:1px}
-.chase-done{font-size:.82rem;color:#52b788;font-weight:600}
-.chase-actions{display:flex;gap:6px;align-items:center}
+.chase-info{flex:1;min-width:0}
+.chase-name{font-size:.86rem;font-weight:600;color:#1b4332}
+.chase-sip{font-size:.72rem;color:#888;margin-top:1px}
+.chase-done-lbl{font-size:.8rem;color:#52b788;font-weight:600;flex-shrink:0}
+.chase-actions{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.wa-btn{display:inline-flex;align-items:center;gap:4px;padding:7px 10px;border-radius:14px;background:#25D366;color:#fff;border:none;font-size:.72rem;font-weight:700;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.wa-btn svg{width:13px;height:13px;fill:#fff;flex-shrink:0}
+.sent-lbl{font-size:.7rem;color:#52b788;font-weight:600;white-space:nowrap}
+.no-ph{font-size:.68rem;color:#ccc}
 /* HISTORY */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.stat-card{background:#fff;border-radius:10px;padding:13px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07)}
-.stat-card .sv{font-size:1.6rem;font-weight:800;color:#2d8a5e}
-.stat-card .sl{font-size:.7rem;color:#888;margin-top:3px}
-.pct-bar{height:5px;background:#e8f5e9;border-radius:3px;margin-top:6px;overflow:hidden}
-.pct-fill{height:100%;background:#2d8a5e;border-radius:3px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
+.stat-card{background:#fff;border-radius:10px;padding:11px 8px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.stat-card .sv{font-size:1.4rem;font-weight:800;color:#2d8a5e}
+.stat-card .sl{font-size:.62rem;color:#888;margin-top:2px;line-height:1.3}
+.pct-bar{height:4px;background:#e8f5e9;border-radius:2px;margin-top:5px;overflow:hidden}
+.pct-fill{height:100%;background:#2d8a5e;border-radius:2px}
 /* ADMIN */
-.admin-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f5f5f5}
+.admin-row{display:flex;align-items:center;gap:7px;padding:8px 0;border-bottom:1px solid #f5f5f5}
 .admin-row:last-child{border-bottom:none}
-.admin-name{font-size:.84rem;font-weight:600;color:#1b4332;flex:1;min-width:0}
-.admin-phone{flex:1.2;padding:7px 9px;border:1.5px solid #ddd;border-radius:7px;font-size:.8rem;color:#333;min-width:0}
+.admin-name{font-size:.82rem;font-weight:600;color:#1b4332;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-phone{flex:1.2;padding:6px 8px;border:1.5px solid #ddd;border-radius:7px;font-size:.78rem;color:#333;min-width:0}
 .admin-phone:focus{outline:none;border-color:#2d8a5e}
-.save-btn{padding:7px 12px;background:#2d8a5e;color:#fff;border:none;border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.save-btn{padding:6px 10px;background:#2d8a5e;color:#fff;border:none;border-radius:7px;font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .save-btn.saved{background:#52b788}
-/* CONTROLS */
-.ctrl-row{display:flex;gap:8px;align-items:center;margin-bottom:0}
+.ctrl-row{display:flex;gap:8px;align-items:center;margin-top:4px}
 .ctrl-row label{font-size:.8rem;color:#666;white-space:nowrap}
 .ctrl-input{width:70px;padding:7px 8px;border:1.5px solid #ccc;border-radius:7px;font-size:.88rem;font-weight:600;color:#1b4332;text-align:center}
 .ctrl-input:focus{outline:none;border-color:#2d8a5e}
 .ctrl-btn{padding:8px 14px;background:#2d8a5e;color:#fff;border:none;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer}
-/* SECTION TITLE */
-.sec{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:12px 0 7px}
-/* TOAST */
-.toast{position:fixed;bottom:122px;left:50%;transform:translateX(-50%) translateY(60px);background:#1b4332;color:#fff;padding:9px 18px;border-radius:18px;font-size:.8rem;font-weight:600;transition:transform .28s ease;z-index:200;white-space:nowrap}
-.toast.on{transform:translateX(-50%) translateY(0)}
 /* MISC */
-.ld-msg{text-align:center;padding:28px;color:#aaa;font-size:.84rem}
-.empty{text-align:center;padding:20px;color:#aaa;font-size:.84rem}
-.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:.65rem;font-weight:700}
-.badge-g{background:#e8f5e9;color:#2d8a5e}
+.sec{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:10px 0 6px}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:.63rem;font-weight:700}
+.badge-g{background:#e8f5e9;color:#2d6a4f}
 .badge-r{background:#fff0eb;color:#e07b39}
 .badge-y{background:#fff8e1;color:#f9a825}
+.ld-msg{text-align:center;padding:28px;color:#aaa;font-size:.84rem}
+.empty{text-align:center;padding:16px;color:#aaa;font-size:.82rem}
+.toast{position:fixed;bottom:122px;left:50%;transform:translateX(-50%) translateY(60px);background:#1b4332;color:#fff;padding:9px 18px;border-radius:18px;font-size:.8rem;font-weight:600;transition:transform .28s ease;z-index:200;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.on{transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
+
+<!-- HEADER -->
 <div class="hdr">
   <h1>&#9670; Quran Khatam Tracker</h1>
   <p>Tap your name when you complete your sipara</p>
 </div>
-<div class="bar">
-  <div><div class="lbl">Khatam No.</div><div class="val" id="kn">-</div></div>
-  <div style="text-align:right"><div class="lbl">Week</div><div class="wk" id="wr">-</div></div>
-</div>
-<div class="prog">
-  <div class="pb"><div class="pf" id="pf" style="width:0"></div></div>
-  <div class="pt" id="pt">Loading...</div>
+
+<!-- MEMORIAL TICKER -->
+<div class="memorial">
+  <div class="memorial-track" id="memorial-track">
+    <!-- filled by JS -->
+  </div>
 </div>
 
-<!-- TAB PANELS -->
+<!-- INFO BAR -->
+<div class="bar">
+  <div>
+    <div class="lbl">Khatam No.</div>
+    <div class="val" id="kn">-</div>
+  </div>
+  <div style="text-align:center">
+    <div class="lbl">Status</div>
+    <div class="countdown cd-ok" id="countdown">Loading</div>
+  </div>
+  <div style="text-align:right">
+    <div class="lbl">Week</div>
+    <div class="wk" id="wr">-</div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="prog">
+  <div class="pb"><div class="pf" id="pf" style="width:0"></div></div>
+  <div class="prog-row">
+    <div class="pt" id="pt">Loading...</div>
+  </div>
+</div>
+
+<!-- LIVE FEED -->
+<div class="feed" id="feed">
+  <div class="feed-dot"></div>
+  <div id="feed-text"></div>
+</div>
+
+<!-- PANELS -->
 <div class="panel on" id="p-week">
   <table>
-    <thead><tr><th class="c">#</th><th>Name</th><th class="c">Sipara</th><th class="c">Done</th></tr></thead>
+    <thead>
+      <tr><th class="c">#</th><th>Name</th><th class="c">Sipara</th><th class="c">Done</th></tr>
+    </thead>
     <tbody id="tb-week"><tr><td colspan="4"><div class="ld-msg">Loading...</div></td></tr></tbody>
   </table>
 </div>
@@ -129,29 +188,30 @@ td{padding:9px 7px;vertical-align:middle}
 <div class="panel" id="p-chase">
   <div id="chase-banner-area"></div>
   <div class="card" id="chase-pending-card" style="display:none">
-    <h3>&#128226; Not yet completed</h3>
+    <h3 id="chase-pending-title">&#128226; Still to complete</h3>
     <div id="chase-pending"></div>
   </div>
   <div class="card" id="chase-done-card" style="display:none">
-    <h3>&#10003; Completed</h3>
+    <h3>&#10003; Completed this week</h3>
     <div id="chase-done"></div>
   </div>
 </div>
 
 <div class="panel" id="p-history">
-  <div class="sec">Completion overview</div>
-  <div class="stat-grid" id="stat-grid">
-    <div class="stat-card"><div class="sv" id="sh-khatams">-</div><div class="sl">Khatams tracked</div></div>
+  <div class="sec">Overview</div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="sv" id="sh-k">-</div><div class="sl">Khatams tracked</div></div>
     <div class="stat-card"><div class="sv" id="sh-avg">-</div><div class="sl">Avg completion</div></div>
+    <div class="stat-card"><div class="sv" id="sh-streak">-</div><div class="sl">Best streak</div></div>
   </div>
   <div class="sec">Recent khatams</div>
   <table>
     <thead><tr><th>Khatam</th><th class="c">Completed</th><th class="c">Rate</th></tr></thead>
     <tbody id="tb-hist"><tr><td colspan="3"><div class="ld-msg">Loading...</div></td></tr></tbody>
   </table>
-  <div class="sec">Member completion rates</div>
+  <div class="sec">Member leaderboard</div>
   <table>
-    <thead><tr><th>Name</th><th class="c">Done</th><th class="c">Rate</th></tr></thead>
+    <thead><tr><th>Name</th><th class="c">Streak &#128293;</th><th class="c">Rate</th></tr></thead>
     <tbody id="tb-members"><tr><td colspan="3"><div class="ld-msg">Loading...</div></td></tr></tbody>
   </table>
 </div>
@@ -159,7 +219,7 @@ td{padding:9px 7px;vertical-align:middle}
 <div class="panel" id="p-admin">
   <div class="card">
     <h3>&#9881; Update Khatam Number</h3>
-    <div class="ctrl-row" style="margin-top:4px">
+    <div class="ctrl-row">
       <label>Khatam No.</label>
       <input class="ctrl-input" type="number" id="ki" min="1" placeholder="394">
       <button class="ctrl-btn" onclick="updKhatam()">Update All</button>
@@ -167,7 +227,7 @@ td{padding:9px 7px;vertical-align:middle}
   </div>
   <div class="sec">Member phone numbers</div>
   <div class="card" style="padding:13px 14px">
-    <p style="font-size:.72rem;color:#888;margin-bottom:10px">Enter UK numbers as 07XXX XXXXXX or international format +447...</p>
+    <p style="font-size:.71rem;color:#888;margin-bottom:10px">UK format: 07XXX XXXXXX — used for WhatsApp reminders</p>
     <div id="admin-list"><div class="ld-msg">Loading...</div></div>
   </div>
 </div>
@@ -178,7 +238,7 @@ td{padding:9px 7px;vertical-align:middle}
     <span class="ic">&#128214;</span>This Week
   </button>
   <button id="t-chase" onclick="showTab('chase')">
-    <span class="ic">&#128172;</span>Chase
+    <span class="ic">&#128172;</span>Reminders
   </button>
   <button id="t-history" onclick="showTab('history')">
     <span class="ic">&#128202;</span>History
@@ -193,176 +253,305 @@ td{padding:9px 7px;vertical-align:middle}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function(){
-var U='https://edghxmezscfbcaeaxuiu.supabase.co';
-var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkZ2h4bWV6c2NmYmNhZWF4dWl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNTc3NDgsImV4cCI6MjA5ODczMzc0OH0.PX3Gi4fIeNlyXmu9SEeFEdYxKzbd3DTVfxaI1kbih_U';
-var SJ={9:'S',13:'S',14:'S',15:'S',16:'S',17:'S',19:'SS',21:'S',23:'S',24:'S',27:'S',30:'SS'};
-var sb=window.supabase.createClient(U,K);
-var kh=394,mb=[],cp={},rm={},activeTab='week';
 
-/* ---- HELPERS ---- */
+/* ══════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════ */
+var SB_URL='https://edghxmezscfbcaeaxuiu.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkZ2h4bWV6c2NmYmNhZWF4dWl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNTc3NDgsImV4cCI6MjA5ODczMzc0OH0.PX3Gi4fIeNlyXmu9SEeFEdYxKzbd3DTVfxaI1kbih_U';
+var SAJDAH={9:'S',13:'S',14:'S',15:'S',16:'S',17:'S',19:'SS',21:'S',23:'S',24:'S',27:'S',30:'SS'};
+var DECEASED=[
+  'Haji Gulam Bapu',
+  'Hajiyani Zubeda Laheri',
+  'Hajiyani Sharifa Bapu',
+  'Nuruddin Patel',
+  'Gotari Nani (Sheriwala)',
+  "Bilal Khankara's Sister"
+];
+
+var sb=window.supabase.createClient(SB_URL,SB_KEY);
+var kh=394, mb=[], cp={}, rm={}, allComps=[], activeTab='week';
+
+/* ══════════════════════════════════════
+   MEMORIAL TICKER
+══════════════════════════════════════ */
+function buildMemorial(){
+  var seg=DECEASED.map(function(n){
+    return '<span class="memorial-seg"><span class="lbl">Al-Fatiha</span><span class="name">'+n+'</span><span class="dot">&#10022;</span></span>';
+  }).join('');
+  // Duplicate for seamless loop
+  var track=document.getElementById('memorial-track');
+  track.innerHTML=seg+seg;
+}
+
+/* ══════════════════════════════════════
+   TIME HELPERS
+══════════════════════════════════════ */
+function londonNow(){
+  return new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/London'}));
+}
+function getCountdownData(){
+  var l=londonNow();
+  var day=l.getDay(), hr=l.getHours(), mn=l.getMinutes();
+  // Deadline: Wednesday 18:00
+  var minsNow=day*1440+hr*60+mn;
+  var minsWed=3*1440+18*60;
+  var diff=minsWed-minsNow;
+  if(diff<0)diff+=7*1440;
+  if(day===3&&hr>=18)return{text:'Deadline passed',cls:'cd-done',past:true};
+  var d=Math.floor(diff/1440);
+  var h=Math.floor((diff%1440)/60);
+  if(d===0&&h<=6)return{text:h+'h left ⚡',cls:'cd-urgent',past:false};
+  if(d===0)return{text:h+'h left',cls:'cd-warn',past:false};
+  return{text:d+' day'+(d>1?'s':'')+' left',cls:'cd-ok',past:false};
+}
+function isChaseLive(){
+  var l=londonNow(); return l.getDay()===3&&l.getHours()>=18||false;
+  // Chase tab active: Sunday or Wednesday 6pm+
+}
+function isChaseDay(){
+  var l=londonNow(); var d=l.getDay();
+  return d===0||(d===3&&l.getHours()>=18);
+}
+function isSunday(){ return londonNow().getDay()===0; }
+function isWednesdayEvening(){ var l=londonNow(); return l.getDay()===3&&l.getHours()>=18; }
+
+/* ══════════════════════════════════════
+   CALCULATIONS
+══════════════════════════════════════ */
 function sp(p){return((kh-1+p-1)%30)+1;}
-function wr(k){
+function weekRange(k){
   var b=new Date(2026,5,9),s=new Date(b.getTime()+(k-391)*7*864e5),e=new Date(s.getTime()+6*864e5);
   var f=function(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});};
   return f(s)+' - '+f(e);
 }
-function isChaseTime(){
-  var now=new Date();
-  var lon=new Date(now.toLocaleString('en-US',{timeZone:'Europe/London'}));
-  return lon.getDay()===3&&lon.getHours()>=18;
+function getStreak(memberId){
+  var done=new Set(allComps.filter(function(c){return c.member_id===memberId&&c.completed;}).map(function(c){return c.khatam_number;}));
+  var streak=0, k=kh;
+  while(done.has(k)){streak++;k--;}
+  return streak;
+}
+function isEarlyBird(memberId){
+  var comp=allComps.find(function(c){return c.member_id===memberId&&c.khatam_number===kh&&c.completed;});
+  if(!comp||!comp.completed_at)return false;
+  var l=new Date(new Date(comp.completed_at).toLocaleString('en-US',{timeZone:'Europe/London'}));
+  // Early = completed on Tuesday or Wednesday before noon
+  return l.getDay()===2||(l.getDay()===3&&l.getHours()<12);
 }
 function normalizePhone(p){
   if(!p)return'';
   var c=p.replace(/[\s\-\(\)\+]/g,'');
   if(c.startsWith('07'))return'44'+c.slice(1);
-  if(c.startsWith('447'))return c;
-  if(c.startsWith('44'))return c;
   return c;
 }
-function waUrl(phone,name,sipara){
+function waUrl(phone,name,sipara,isSun){
   var np=normalizePhone(phone);
   if(!np)return null;
-  var msg='Assalamu Alaikum '+name+', just a friendly reminder \u2014 your sipara for Khatam '+kh+' is Sipara '+sipara+'. Please try to complete it by tonight insha\u2019Allah \uD83E\uDD32 JazakAllah Khair';
+  // Randomly pick one deceased as the 'main' soul in the message
+  var shuffled=DECEASED.slice().sort(function(){return Math.random()-.5;});
+  var main=shuffled[0];
+  var others=shuffled.slice(1,4);
+  var othersStr=others.join(', ');
+  // Day name in London time
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var dayName=days[londonNow().getDay()];
+  var msg;
+  if(isSun){
+    msg='Assalamu Alaikum '+name+' \uD83C\uDF38\n\n'
+      +'A new week of Khatam has begun, Khatam No.'+kh+'. Your sipara is Sipara '+sipara+'.\n\n'
+      +main+' is eagerly awaiting the blessings of your recitation and is relying on you insha\u2019Allah \uD83E\uDD32\n\n'
+      +othersStr+' and our other beloved are also hungry and craving for these rewards from Allah.\n\n'
+      +'May Allah make it easy for you and accept from us all. JazakAllah Khair \uD83D\uDC9A';
+  } else {
+    msg='Assalamu Alaikum '+name+' \uD83D\uDC9A\n\n'
+      +'A gentle reminder \u2014 Sipara '+sipara+' for Khatam No.'+kh+' by tonight insha\u2019Allah.\n\n'
+      +main+' is striving for these blessings this '+dayName+' and is relying on you to complete it \uD83E\uDD32\n\n'
+      +othersStr+' and our other beloved are also hungry and craving for the rewards of this Khatam.\n\n'
+      +'Our beloved souls cannot afford to miss these blessings \u2014 may Allah accept from us all and grant them Jannah Al-Firdaus. JazakAllah Khair \uD83C\uDF39';
+  }
   return'https://wa.me/'+np+'?text='+encodeURIComponent(msg);
 }
-function sajdahHtml(s){
-  var sj=SJ[s];
-  return sj?'<span class="sb">'+(sj==='SS'?'2 Sajdahs':'1 Sajdah')+'</span>':'';
-}
-function toast(msg){
-  var t=document.getElementById('tst');t.textContent=msg;t.classList.add('on');
-  setTimeout(function(){t.classList.remove('on');},2200);
-}
+
+/* ══════════════════════════════════════
+   HEADER UPDATES
+══════════════════════════════════════ */
 function updateHeader(){
   document.getElementById('kn').textContent=kh;
-  document.getElementById('wr').textContent=wr(kh);
+  document.getElementById('ki').value=kh;
+  document.getElementById('wr').textContent=weekRange(kh);
   var dn=mb.filter(function(m){return cp[m.id]===true;}).length;
   var pc=mb.length?Math.round(dn/mb.length*100):0;
   document.getElementById('pf').style.width=pc+'%';
   document.getElementById('pt').textContent=dn+' of '+mb.length+' completed \u2014 '+pc+'%';
+  var cd=getCountdownData();
+  var cdEl=document.getElementById('countdown');
+  cdEl.textContent=cd.text;
+  cdEl.className='countdown '+cd.cls;
+  // Chase tab alert
+  var pending=mb.filter(function(m){return!cp[m.id];}).length;
+  var cBtn=document.getElementById('t-chase');
+  var badge=cBtn.querySelector('.badge');
+  if(isChaseDay()&&pending>0){
+    cBtn.classList.add('alert-tab');
+    cBtn.querySelector('.ic').textContent='\uD83D\uDD14';
+    if(!badge){var b=document.createElement('span');b.className='badge';cBtn.appendChild(b);}
+    cBtn.querySelector('.badge').textContent=pending;
+  } else {
+    cBtn.classList.remove('alert-tab');
+    cBtn.querySelector('.ic').textContent='\uD83D\uDCAC';
+    if(badge)badge.remove();
+  }
 }
 
-/* ---- TAB SWITCHING ---- */
+/* ══════════════════════════════════════
+   TAB SWITCHING
+══════════════════════════════════════ */
 window.showTab=function(tab){
   activeTab=tab;
   ['week','chase','history','admin'].forEach(function(t){
     document.getElementById('p-'+t).classList.toggle('on',t===tab);
-    var btn=document.getElementById('t-'+t);
-    btn.classList.toggle('on',t===tab);
+    document.getElementById('t-'+t).classList.toggle('on',t===tab);
   });
   if(tab==='chase')renderChase();
   if(tab==='history')renderHistory();
   if(tab==='admin')renderAdmin();
 };
 
-/* ---- WEEK TAB ---- */
+/* ══════════════════════════════════════
+   WEEK TAB
+══════════════════════════════════════ */
 function renderWeek(){
   updateHeader();
   var tb=document.getElementById('tb-week');
-  tb.innerHTML='';
   if(!mb.length){tb.innerHTML='<tr><td colspan="4"><div class="ld-msg">Loading...</div></td></tr>';return;}
+  tb.innerHTML='';
   mb.forEach(function(m){
     var s=sp(m.position),done=cp[m.id]===true;
+    var streak=getStreak(m.id);
+    var early=done&&isEarlyBird(m.id);
+    var streakHtml='';
+    if(streak>=10)streakHtml='<span class="streak streak-gold">\uD83C\uDF1F'+streak+'</span>';
+    else if(streak>=3)streakHtml='<span class="streak streak-fire">\uD83D\uDD25'+streak+'</span>';
+    else if(streak>0)streakHtml='<span class="streak" style="color:#aaa;font-size:.6rem">\uD83D\uDD25'+streak+'</span>';
+    var earlyHtml=early?'<span class="early-star" title="Completed early!">\u2B50</span>':'';
+    var rowClass=early?'early-row':(done?'ok':'');
     var tr=document.createElement('tr');
-    if(done)tr.className='ok';
+    if(rowClass)tr.className=rowClass;
     tr.innerHTML='<td class="no">'+m.position+'</td>'
-      +'<td><div class="nm">'+m.display_name+'</div></td>'
-      +'<td class="c"><span class="sn">'+s+'</span>'+sajdahHtml(s)+'</td>'
-      +'<td class="tc"><button class="btn'+(done?' done':'')+'" id="b'+m.id+'" data-id="'+m.id+'">'+(done?'&#10003; Done':'Mark Done')+'</button></td>';
+      +'<td><div class="nm">'+m.display_name+streakHtml+'</div></td>'
+      +'<td class="c"><span class="sn">'+s+'</span>'+(SAJDAH[s]?'<span class="sb">'+(SAJDAH[s]==='SS'?'2 Saj':'1 Saj')+'</span>':'')+'</td>'
+      +'<td class="tc"><button class="btn'+(done?' done':'')+'" id="b'+m.id+'" data-id="'+m.id+'">'
+      +(done?earlyHtml+' \u2713 Done':'Mark Done')+'</button></td>';
     tb.appendChild(tr);
   });
   tb.querySelectorAll('.btn').forEach(function(b){
     b.addEventListener('click',function(){tog(parseInt(b.getAttribute('data-id')));});
   });
-  // Show chase tab alert on Wednesday 6pm+
-  var cBtn=document.getElementById('t-chase');
-  if(isChaseTime()&&mb.some(function(m){return!cp[m.id];})){
-    cBtn.classList.add('alert-tab');
-    var ic=cBtn.querySelector('.ic');
-    if(ic)ic.textContent='\uD83D\uDD14';
-  } else {
-    cBtn.classList.remove('alert-tab');
-    var ic2=cBtn.querySelector('.ic');
-    if(ic2)ic2.textContent='\uD83D\uDCAC';
-  }
 }
 
-/* ---- TOGGLE COMPLETION ---- */
+/* ══════════════════════════════════════
+   TOGGLE COMPLETION
+══════════════════════════════════════ */
 function tog(id){
   var was=cp[id]===true;cp[id]=!was;renderWeek();
   sb.from('qk_completions').upsert({khatam_number:kh,member_id:id,completed:!was,
     completed_at:!was?new Date().toISOString():null},{onConflict:'khatam_number,member_id'}).then(function(r){
     if(r.error){cp[id]=was;renderWeek();toast('Error \u2014 try again');}
-    else toast(!was?'\u2713 Marked complete':'Unmarked');
+    else if(!was){
+      // Update local allComps for streak
+      var existing=allComps.find(function(c){return c.member_id===id&&c.khatam_number===kh;});
+      if(existing){existing.completed=true;existing.completed_at=new Date().toISOString();}
+      else allComps.push({member_id:id,khatam_number:kh,completed:true,completed_at:new Date().toISOString()});
+      toast('\u2713 Marked complete \u2014 JazakAllah Khair');
+    } else {
+      var ex2=allComps.find(function(c){return c.member_id===id&&c.khatam_number===kh;});
+      if(ex2)ex2.completed=false;
+      toast('Unmarked');
+    }
+    renderWeek();
   });
 }
 
-/* ---- CHASE TAB ---- */
+/* ══════════════════════════════════════
+   CHASE TAB
+══════════════════════════════════════ */
 function renderChase(){
   updateHeader();
-  var banner=document.getElementById('chase-banner-area');
-  var pendingCard=document.getElementById('chase-pending-card');
-  var doneCard=document.getElementById('chase-done-card');
-  var pendingEl=document.getElementById('chase-pending');
-  var doneEl=document.getElementById('chase-done');
-
+  var isSun=isSunday(), isWed=isWednesdayEvening();
+  var showReminders=isSun||isWed;
   var pending=mb.filter(function(m){return!cp[m.id];});
   var done=mb.filter(function(m){return cp[m.id]===true;});
+  var bannerEl=document.getElementById('chase-banner-area');
+  var pendCard=document.getElementById('chase-pending-card');
+  var doneCard=document.getElementById('chase-done-card');
+  var pendEl=document.getElementById('chase-pending');
+  var doneEl=document.getElementById('chase-done');
+  var pendTitle=document.getElementById('chase-pending-title');
 
-  if(isChaseTime()&&pending.length){
-    banner.innerHTML='<div class="chase-banner"><h2>\uD83D\uDD14 Wednesday Reminder Time</h2><p>'+pending.length+' member'+(pending.length>1?'s':'')+' still to complete \u2014 tap WhatsApp to send reminder</p></div>';
-  } else if(!pending.length){
-    banner.innerHTML='<div class="chase-idle" style="background:#f0fff6;border-color:#c8e6c9"><p style="color:#2d6a4f">\u2713 All '+mb.length+' siparas completed this week!</p></div>';
+  // Banner
+  if(!pending.length){
+    bannerEl.innerHTML='<div class="chase-banner chase-all-done"><h2>\uD83C\uDF1F All '+mb.length+' Siparas Complete!</h2><p>May Allah accept and grant blessings to our beloved departed souls. \u0622\u0645\u06CC\u0646</p></div>';
+  } else if(isWed){
+    bannerEl.innerHTML='<div class="chase-banner chase-wed"><h2>\uD83D\uDD14 Wednesday Reminder</h2><p>'+pending.length+' member'+(pending.length>1?'s':'')+' still to complete \u2014 tap to send a reminder</p></div>';
+    pendTitle.textContent='\uD83D\uDD14 Still to complete \u2014 send reminder';
+  } else if(isSun){
+    bannerEl.innerHTML='<div class="chase-banner chase-sun"><h2>\uD83C\uDF38 New Week Reminder</h2><p>Send a gentle reminder to get everyone started insha\u2019Allah</p></div>';
+    pendTitle.textContent='\uD83C\uDF38 Send week-start reminder';
   } else {
-    var lon=new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/London'}));
+    var l=londonNow();
     var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    var day=days[lon.getDay()];
-    banner.innerHTML='<div class="chase-idle"><p>Reminders go live Wednesday from 6pm UK time</p><div class="ctime">Today is '+day+' \u2014 '+pending.length+' sipara'+(pending.length>1?'s':'')+' outstanding</div></div>';
+    bannerEl.innerHTML='<div class="chase-idle"><p style="color:#888">Reminders go live on <strong>Sunday</strong> (week start) and <strong>Wednesday 6pm</strong></p><p style="color:#2d8a5e;font-weight:600;margin-top:5px">Today is '+days[l.getDay()]+' \u2014 '+pending.length+' still to complete</p></div>';
   }
 
+  // Pending
   if(pending.length){
-    pendingCard.style.display='';
-    pendingEl.innerHTML='';
+    pendCard.style.display='';
+    pendEl.innerHTML='';
     pending.forEach(function(m){
       var s=sp(m.position);
-      var url=m.phone?waUrl(m.phone,m.display_name,s):null;
+      var streak=getStreak(m.id);
+      var url=m.phone?waUrl(m.phone,m.display_name,s,isSun&&!isWed):null;
       var isSent=rm[m.id]===true;
       var div=document.createElement('div');
       div.className='chase-row';
-      div.innerHTML='<div><div class="chase-name">'+m.display_name+'</div><div class="chase-sip">Sipara '+s+(SJ[s]?' ('+SJ[s]+')':'')+'</div></div>'
+      var streakTxt=streak>0?(' \uD83D\uDD25'+streak):'';
+      div.innerHTML='<div class="chase-info"><div class="chase-name">'+m.display_name+streakTxt+'</div>'
+        +'<div class="chase-sip">Sipara '+s+(SAJDAH[s]?' ('+SAJDAH[s]+')':'')+'</div></div>'
         +'<div class="chase-actions">'
-        +(url?'<a class="wa-btn" href="'+url+'" target="_blank" data-id="'+m.id+'" onclick="markSent('+m.id+')">'
+        +(isSent?'<span class="sent-lbl">\u2713 Sent</span>':'')
+        +(url&&showReminders?'<a class="wa-btn" href="'+url+'" target="_blank" onclick="markSent('+m.id+')">'
           +'<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.096.539 4.063 1.482 5.774L0 24l6.388-1.456A11.938 11.938 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.816 9.816 0 01-5.001-1.371l-.36-.213-3.714.847.876-3.613-.234-.372A9.785 9.785 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/></svg>'
-          +'Send'+'</a>':'<span style="font-size:.72rem;color:#ccc">No number</span>')
-        +(isSent?'<span class="sent-btn">\u2713 Sent</span>':'')
+          +'Send</a>'
+          :(url?'<span class="no-ph">Not today</span>':'<span class="no-ph">No number</span>'))
         +'</div>';
-      pendingEl.appendChild(div);
+      pendEl.appendChild(div);
     });
-  } else {
-    pendingCard.style.display='none';
-  }
+  } else pendCard.style.display='none';
 
+  // Done
   if(done.length){
     doneCard.style.display='';
     doneEl.innerHTML='';
     done.forEach(function(m){
+      var early=isEarlyBird(m.id);
       var div=document.createElement('div');
       div.className='chase-row';
-      div.innerHTML='<div class="chase-name">'+m.display_name+'</div><div class="chase-done">\u2713 Complete</div>';
+      div.innerHTML='<div class="chase-name">'+m.display_name+(early?' \u2B50':'')+'</div>'
+        +'<span class="chase-done-lbl">\u2713 Complete'+(early?' (early)':'')+'</span>';
       doneEl.appendChild(div);
     });
-  } else {
-    doneCard.style.display='none';
-  }
+  } else doneCard.style.display='none';
 }
 
 window.markSent=function(id){
   rm[id]=true;
   sb.from('qk_reminders').upsert({khatam_number:kh,member_id:id,sent_at:new Date().toISOString()},{onConflict:'khatam_number,member_id'}).then(function(){});
-  setTimeout(function(){if(activeTab==='chase')renderChase();},400);
+  setTimeout(function(){if(activeTab==='chase')renderChase();},500);
 };
 
-/* ---- HISTORY TAB ---- */
+/* ══════════════════════════════════════
+   HISTORY TAB
+══════════════════════════════════════ */
 function renderHistory(){
   var tbH=document.getElementById('tb-hist');
   var tbM=document.getElementById('tb-members');
@@ -380,48 +569,59 @@ function renderHistory(){
       byK[c.khatam_number].total++;
       if(c.completed)byK[c.khatam_number].done++;
     });
-    var kList=Object.keys(byK).map(Number).sort(function(a,b){return b-a;}).slice(0,12);
+    var kList=Object.keys(byK).map(Number).sort(function(a,b){return b-a;}).slice(0,15);
     var totalPct=kList.reduce(function(s,k){return s+Math.round(100*byK[k].done/byK[k].total);},0);
     var avgPct=kList.length?Math.round(totalPct/kList.length):0;
-    document.getElementById('sh-khatams').textContent=kList.length;
+
+    // Best member streak
+    var bestStreak=0;
+    mb.forEach(function(m){var s=getStreak(m.id);if(s>bestStreak)bestStreak=s;});
+
+    document.getElementById('sh-k').textContent=kList.length;
     document.getElementById('sh-avg').textContent=avgPct+'%';
+    document.getElementById('sh-streak').textContent='\uD83D\uDD25'+bestStreak;
 
     tbH.innerHTML='';
     kList.forEach(function(k){
       var d=byK[k],pct=Math.round(100*d.done/d.total);
-      var badge=pct===100?'<span class="badge badge-g">100%</span>':pct>=70?'<span class="badge badge-y">'+pct+'%</span>':'<span class="badge badge-r">'+pct+'%</span>';
+      var badge=pct===100?'<span class="badge badge-g">100% \u2713</span>':pct>=70?'<span class="badge badge-y">'+pct+'%</span>':'<span class="badge badge-r">'+pct+'%</span>';
       var tr=document.createElement('tr');
-      tr.innerHTML='<td style="font-weight:600;color:#1b4332">#'+k+(k===kh?' <span style="font-size:.65rem;color:#888">(now)</span>':'')+'</td>'
-        +'<td class="c" style="color:#555">'+d.done+' / '+d.total+'</td>'
+      tr.innerHTML='<td style="font-weight:600;color:#1b4332">#'+k+(k===kh?' <span style="font-size:.62rem;color:#aaa">(now)</span>':'')+'</td>'
+        +'<td class="c" style="color:#555;font-size:.82rem">'+d.done+'/'+d.total+'</td>'
         +'<td class="c">'+badge+'</td>';
       tbH.appendChild(tr);
     });
 
-    // Per-member stats
+    // Member leaderboard
     var byM={};
-    mb.forEach(function(m){byM[m.id]={name:m.display_name,total:0,done:0};});
-    data.forEach(function(c){
-      if(byM[c.member_id]){byM[c.member_id].total++;if(c.completed)byM[c.member_id].done++;}
-    });
+    mb.forEach(function(m){byM[m.id]={name:m.display_name,total:0,done:0,streak:getStreak(m.id)};});
+    data.forEach(function(c){if(byM[c.member_id]){byM[c.member_id].total++;if(c.completed)byM[c.member_id].done++;}});
+
     var mList=Object.values(byM).filter(function(m){return m.total>0;}).sort(function(a,b){
-      return(b.done/b.total)-(a.done/a.total);
+      var pa=a.done/a.total,pb=b.done/b.total;
+      if(pb!==pa)return pb-pa;
+      return b.streak-a.streak;
     });
 
     tbM.innerHTML='';
-    mList.forEach(function(m){
+    mList.forEach(function(m,i){
       var pct=Math.round(100*m.done/m.total);
-      var badge=pct===100?'<span class="badge badge-g">&#11088;</span>':pct>=75?'<span class="badge badge-g">'+pct+'%</span>':pct>=50?'<span class="badge badge-y">'+pct+'%</span>':'<span class="badge badge-r">'+pct+'%</span>';
+      var medal=i===0?'\uD83E\uDD47 ':i===1?'\uD83E\uDD48 ':i===2?'\uD83E\uDD49 ':'';
+      var streakHtml=m.streak>=3?'<span style="color:#ff6b35;font-weight:700">\uD83D\uDD25'+m.streak+'</span>':'<span style="color:#ccc">'+m.streak+'</span>';
+      var badge=pct===100?'<span class="badge badge-g">\u2B50</span>':pct>=75?'<span class="badge badge-g">'+pct+'%</span>':pct>=50?'<span class="badge badge-y">'+pct+'%</span>':'<span class="badge badge-r">'+pct+'%</span>';
       var tr=document.createElement('tr');
-      tr.innerHTML='<td class="nm">'+m.name+'</td>'
-        +'<td class="c" style="font-size:.82rem;color:#555">'+m.done+'/'+m.total+'</td>'
-        +'<td class="c">'+badge+'<div class="pct-bar" style="margin-top:4px"><div class="pct-fill" style="width:'+pct+'%"></div></div></td>';
+      tr.innerHTML='<td class="nm">'+medal+m.name+'</td>'
+        +'<td class="c">'+streakHtml+'</td>'
+        +'<td class="c">'+badge+'<div class="pct-bar"><div class="pct-fill" style="width:'+pct+'%"></div></div></td>';
       tbM.appendChild(tr);
     });
-    if(!mList.length)tbM.innerHTML='<tr><td colspan="3"><div class="empty">Complete at least one khatam to see stats</div></td></tr>';
+    if(!mList.length)tbM.innerHTML='<tr><td colspan="3"><div class="empty">Data builds up week by week</div></td></tr>';
   });
 }
 
-/* ---- ADMIN TAB ---- */
+/* ══════════════════════════════════════
+   ADMIN TAB
+══════════════════════════════════════ */
 function renderAdmin(){
   document.getElementById('ki').value=kh;
   var list=document.getElementById('admin-list');
@@ -441,10 +641,9 @@ window.savePhone=function(id){
   var btn=document.getElementById('sv-'+id);
   btn.textContent='...';
   sb.from('qk_members').update({phone:val||null}).eq('id',id).then(function(r){
-    if(r.error){btn.textContent='Error';return;}
-    var m=mb.find(function(x){return x.id===id;});
-    if(m)m.phone=val||null;
-    btn.textContent='Saved';btn.classList.add('saved');
+    if(r.error){btn.textContent='Err';return;}
+    var m=mb.find(function(x){return x.id===id;});if(m)m.phone=val||null;
+    btn.textContent='\u2713';btn.classList.add('saved');
     setTimeout(function(){btn.textContent='Save';btn.classList.remove('saved');},2000);
   });
 };
@@ -455,12 +654,31 @@ window.updKhatam=function(){
   sb.from('qk_config').update({khatam_number:v}).eq('id',1).then(function(r){
     if(r.error){toast('Error updating');return;}
     kh=v;cp={};rm={};
-    lc().then(function(){lr().then(function(){renderWeek();if(activeTab==='chase')renderChase();});});
-    toast('\u2713 Khatam updated to '+v);
+    Promise.all([lc(),lr(),loadAllComps()]).then(function(){renderWeek();if(activeTab==='chase')renderChase();});
+    toast('\u2713 Khatam '+v+' \u2014 all siparas updated');
   });
 };
 
-/* ---- DATA LOADING ---- */
+/* ══════════════════════════════════════
+   LIVE COMPLETION FEED
+══════════════════════════════════════ */
+function showFeed(msg){
+  var f=document.getElementById('feed'),t=document.getElementById('feed-text');
+  t.textContent=msg;f.classList.add('on');
+  setTimeout(function(){f.classList.remove('on');},4000);
+}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function toast(msg){
+  var t=document.getElementById('tst');t.textContent=msg;t.classList.add('on');
+  setTimeout(function(){t.classList.remove('on');},2400);
+}
+
+/* ══════════════════════════════════════
+   DATA LOADING
+══════════════════════════════════════ */
 function lc(){
   return sb.from('qk_completions').select('member_id,completed').eq('khatam_number',kh).then(function(r){
     cp={};if(r.data)r.data.forEach(function(c){cp[c.member_id]=c.completed;});
@@ -471,39 +689,59 @@ function lr(){
     rm={};if(r.data)r.data.forEach(function(c){rm[c.member_id]=true;});
   });
 }
+function loadAllComps(){
+  return sb.from('qk_completions')
+    .select('member_id,khatam_number,completed,completed_at')
+    .gte('khatam_number',kh-52) // up to 1 year back
+    .then(function(r){allComps=r.data||[];});
+}
 
-/* ---- REALTIME ---- */
+/* ══════════════════════════════════════
+   REALTIME
+══════════════════════════════════════ */
 function subscribe(){
   sb.channel('kh-main')
     .on('postgres_changes',{event:'*',schema:'public',table:'qk_completions'},function(p){
-      if(p.new&&p.new.khatam_number===kh){cp[p.new.member_id]=p.new.completed;renderWeek();if(activeTab==='chase')renderChase();}
+      if(!p.new||p.new.khatam_number!==kh)return;
+      var prev=cp[p.new.member_id];
+      cp[p.new.member_id]=p.new.completed;
+      // Update allComps
+      var ex=allComps.find(function(c){return c.member_id===p.new.member_id&&c.khatam_number===kh;});
+      if(ex){ex.completed=p.new.completed;ex.completed_at=p.new.completed_at;}
+      else allComps.push({member_id:p.new.member_id,khatam_number:kh,completed:p.new.completed,completed_at:p.new.completed_at});
+      // Live feed (only show when someone else marks done)
+      if(p.new.completed&&!prev){
+        var m=mb.find(function(x){return x.id===p.new.member_id;});
+        if(m)showFeed(m.display_name+' just completed Sipara '+sp(m.position)+' \u2713');
+      }
+      renderWeek();
+      if(activeTab==='chase')renderChase();
     })
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'qk_config'},function(p){
-      if(p.new&&p.new.khatam_number!==kh){
-        kh=p.new.khatam_number;cp={};rm={};
-        lc().then(function(){lr().then(function(){renderWeek();if(activeTab==='chase')renderChase();});});
-        toast('Khatam updated to '+kh);
-      }
+      if(!p.new||p.new.khatam_number===kh)return;
+      kh=p.new.khatam_number;cp={};rm={};
+      Promise.all([lc(),lr(),loadAllComps()]).then(function(){renderWeek();if(activeTab==='chase')renderChase();});
+      toast('Khatam updated to '+kh);
     })
     .subscribe();
 }
 
-/* ---- INIT ---- */
-function init(){
-  sb.from('qk_config').select('khatam_number').eq('id',1).single().then(function(r){
-    if(r.data)kh=r.data.khatam_number;
-    return sb.from('qk_members').select('*').order('position');
-  }).then(function(r){
-    if(r.data)mb=r.data;
-    return lc();
-  }).then(function(){
-    return lr();
-  }).then(function(){
-    renderWeek();
-    subscribe();
-  });
-}
-init();
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+buildMemorial();
+
+sb.from('qk_config').select('khatam_number').eq('id',1).single().then(function(r){
+  if(r.data)kh=r.data.khatam_number;
+  return sb.from('qk_members').select('*').order('position');
+}).then(function(r){
+  if(r.data)mb=r.data;
+  return Promise.all([lc(),lr(),loadAllComps()]);
+}).then(function(){
+  renderWeek();
+  subscribe();
+});
+
 }());
 </script>
 </body>
