@@ -605,6 +605,13 @@ function applyTuesdayTheme(){
   document.querySelector('.hdr').classList.add('tue-header-override');
   document.querySelector('.bar').classList.add('tue-bar-override');
   document.querySelector('.memorial').style.borderBottom='1px solid rgba(201,168,76,.3)';
+  // Autoplay naat immediately
+  var frame=document.getElementById('naat-frame');
+  var btn=document.getElementById('naat-play-btn');
+  frame.src='https://www.youtube.com/embed/io-LZgIXqfw?autoplay=1&loop=1&playlist=io-LZgIXqfw&controls=0&rel=0&mute=0';
+  naatPlaying=true;
+  btn.textContent='\u23F8 Playing...';
+  btn.classList.add('playing');
 }
 
 /* SEQUENTIAL REMINDER FLOW */
