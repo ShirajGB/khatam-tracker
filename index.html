@@ -555,7 +555,7 @@ window.markSent=function(id){
 
 
 /* TUESDAY THEME */
-function isTuesday(){return londonNow().getDay()===2;}
+function isTuesday(){var l=londonNow();return l.getFullYear()===2026&&l.getMonth()===7&&l.getDate()===25;}
 function applyTuesdayTheme(){
   if(!isTuesday())return;
   document.getElementById('tue-wrap').style.display='block';
