@@ -157,6 +157,17 @@ td{padding:9px 7px;vertical-align:middle}
 .tue-bar-override .val{color:#FFD700 !important}
 .tue-bar-override .wk{color:#a8d5b5 !important}
 .tue-bar-override .countdown{background:rgba(201,168,76,.2) !important;color:#FFD700 !important}
+
+/* DUROOD + NAAT SECTION */
+.tue-durood-section{background:linear-gradient(180deg,#0d1f0d,#0a1a0a);padding:18px 16px;text-align:center;border-bottom:1px solid rgba(201,168,76,.2)}
+.tue-durood-ar{font-family:serif;font-size:1.25rem;color:#FFD700;direction:rtl;line-height:2;letter-spacing:1px;text-shadow:0 0 20px rgba(255,215,0,.3)}
+.tue-salat-roman{font-size:.82rem;color:#a8d5b5;margin-top:8px;letter-spacing:.5px;font-style:italic}
+.tue-naat-card{background:linear-gradient(135deg,#0d2010,#1a3a1a);padding:16px;text-align:center;border-bottom:3px solid #c9a84c}
+.tue-naat-label{font-size:.7rem;color:rgba(201,168,76,.7);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.tue-naat-title{font-size:.95rem;color:#FFD700;font-weight:700;margin-bottom:14px}
+.tue-play-btn{padding:13px 30px;background:linear-gradient(135deg,#c9a84c,#FFD700);color:#0d1f0d;border:none;border-radius:25px;font-size:.9rem;font-weight:800;cursor:pointer;letter-spacing:.5px;box-shadow:0 4px 15px rgba(201,168,76,.4);-webkit-tap-highlight-color:transparent;transition:all .2s}
+.tue-play-btn.playing{background:linear-gradient(135deg,#2d8a5e,#52b788);color:#fff;box-shadow:0 4px 15px rgba(82,183,136,.4)}
+.tue-naat-hint{font-size:.68rem;color:rgba(168,213,181,.6);margin-top:10px}
 </style>
 </head>
 <body>
@@ -187,6 +198,19 @@ td{padding:9px 7px;vertical-align:middle}
          onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Masjid_Al_Nabawi.jpg/1280px-Masjid_Al_Nabawi.jpg'">
     <div class="tue-mosque-overlay"></div>
     <div class="tue-mosque-caption">&#9652; Al-Masjid an-Nabawi &bull; Madinah al-Munawwarah &#9652;</div>
+  </div>
+  <div class="tue-durood-section">
+    <div class="tue-durood-ar">&#x635;&#x644;&#x649; &#x627;&#x644;&#x644;&#x647; &#x639;&#x644;&#x64A;&#x647; &#x648;&#x633;&#x644;&#x645;</div>
+    <div class="tue-durood-ar" style="font-size:1rem;color:#c9a84c">&#x635;&#x644;&#x627;&#x629;&#x64C; &#x648;&#x633;&#x644;&#x627;&#x645;&#x64C; &#x639;&#x644;&#x64A;&#x643;&#x64E; &#x64A;&#x627; &#x631;&#x633;&#x648;&#x644;&#x64E; &#x627;&#x644;&#x644;&#x647;</div>
+    <div class="tue-salat-roman">Salat toh Salaam alaika Ya Rasoolullah &#9732;</div>
+  </div>
+  <div class="tue-naat-card">
+    <div class="tue-naat-label">&#9836; Now Playing</div>
+    <div class="tue-naat-title">Assalato Wassalama alaika Ya Rasoolullah</div>
+    <button class="tue-play-btn" id="naat-play-btn" onclick="toggleNaat()">&#9654; Play Naat</button>
+    <div class="tue-naat-hint">Tap to play &bull; Plays in background while you use the tracker</div>
+    <iframe id="naat-frame" src="" width="0" height="0" frameborder="0"
+      allow="autoplay; encrypted-media" style="display:none;position:absolute"></iframe>
   </div>
   <div class="tue-divider"></div>
 </div>
@@ -553,6 +577,25 @@ window.markSent=function(id){
   setTimeout(function(){if(activeTab==='chase')renderChase();},500);
 };
 
+
+
+/* NAAT PLAYER */
+var naatPlaying=false;
+window.toggleNaat=function(){
+  var frame=document.getElementById('naat-frame');
+  var btn=document.getElementById('naat-play-btn');
+  if(!naatPlaying){
+    frame.src='https://www.youtube.com/embed/io-LZgIXqfw?autoplay=1&loop=1&playlist=io-LZgIXqfw&controls=0&rel=0';
+    naatPlaying=true;
+    btn.textContent='\u23F8 Playing...';
+    btn.classList.add('playing');
+  } else {
+    frame.src='';
+    naatPlaying=false;
+    btn.textContent='\u25B6 Play Naat';
+    btn.classList.remove('playing');
+  }
+};
 
 /* TUESDAY THEME */
 function isTuesday(){var l=londonNow();return l.getFullYear()===2026&&l.getMonth()===7&&l.getDate()===25;}
