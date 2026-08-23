@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Quran Khatam Tracker</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;min-height:100vh;padding-bottom:114px}
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#1b6b45,#2d8a5e);color:#fff;padding:16px;text-align:center}
+.hdr h1{font-size:1.2rem;font-weight:700}
+.hdr p{font-size:.72rem;opacity:.75;margin-top:4px}
+/* INFO BAR */
+.bar{background:#134d32;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+.bar .lbl{font-size:.62rem;opacity:.6;text-transform:uppercase;letter-spacing:.4px}
+.bar .val{font-size:1.4rem;font-weight:800;line-height:1}
+.bar .wk{font-size:.8rem;font-weight:500}
+/* PROGRESS */
+.prog{background:#e8f5e9;padding:9px 16px;border-bottom:1px solid #c8e6c9}
+.pb{height:7px;background:#c8e6c9;border-radius:4px;overflow:hidden;margin-bottom:4px}
+.pf{height:100%;background:linear-gradient(90deg,#2d8a5e,#52b788);border-radius:4px;transition:width .4s}
+.pt{font-size:.74rem;color:#2d6a4f;font-weight:600}
+/* BOTTOM NAV */
+.nav{position:fixed;bottom:50px;left:0;right:0;background:#fff;border-top:1px solid #e0e0e0;display:flex;z-index:50;border-radius:12px 12px 0 0;box-shadow:0 -2px 10px rgba(0,0,0,.1)}
+.nav button{flex:1;padding:10px 4px 8px;background:none;border:none;font-size:.62rem;font-weight:600;color:#999;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent}
+.nav button .ic{font-size:1.25rem;line-height:1}
+.nav button.on{color:#2d8a5e}
+.nav button.on .ic{filter:drop-shadow(0 0 2px rgba(45,138,94,.4))}
+.nav button.alert-tab{color:#e07b39}
+.nav button.alert-tab .ic{animation:ring .8s ease infinite}
+@keyframes ring{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+/* PANELS */
+.panel{display:none;padding:10px}
+.panel.on{display:block}
+/* TABLE */
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.08);margin-bottom:10px}
+thead tr{background:#2d8a5e;color:#fff}
+th{padding:9px 7px;font-size:.68rem;font-weight:600;text-align:left;text-transform:uppercase}
+th.c{text-align:center}
+tbody tr{border-bottom:1px solid #f0f0f0}
+tbody tr:last-child{border-bottom:none}
+tbody tr.ok{background:#f0fff6}
+td{padding:9px 7px;vertical-align:middle}
+.no{font-size:.7rem;color:#ccc;font-weight:600}
+.nm{font-size:.86rem;font-weight:600;color:#1b4332}
+.sn{font-size:1.1rem;font-weight:800;color:#2d8a5e;display:block}
+.sb{display:inline-block;font-size:.58rem;color:#fff;background:#e07b39;border-radius:3px;padding:1px 3px;margin-top:1px;font-weight:700}
+.tc{text-align:center}
+/* BUTTONS */
+.btn{display:inline-block;padding:7px 11px;border-radius:16px;border:2px solid #2d8a5e;background:#fff;color:#2d8a5e;font-size:.74rem;font-weight:600;cursor:pointer;min-width:78px;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.btn.done{background:#2d8a5e;color:#fff}
+.btn.ld{opacity:.45;pointer-events:none}
+.wa-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:16px;background:#25D366;color:#fff;border:none;font-size:.76rem;font-weight:700;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.wa-btn svg{width:15px;height:15px;fill:#fff}
+.sent-btn{display:inline-block;padding:7px 11px;border-radius:16px;background:#e8f5e9;color:#2d8a5e;border:1.5px solid #c8e6c9;font-size:.72rem;font-weight:600;cursor:pointer}
+/* CHASE PANEL */
+.chase-banner{background:linear-gradient(135deg,#e07b39,#c85a1e);color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center}
+.chase-banner h2{font-size:1rem;font-weight:700;margin-bottom:3px}
+.chase-banner p{font-size:.76rem;opacity:.85}
+.chase-idle{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center;border:1.5px dashed #c8e6c9}
+.chase-idle p{font-size:.82rem;color:#888}
+.chase-idle .ctime{font-size:1rem;font-weight:700;color:#2d8a5e;margin-top:5px}
+.card{background:#fff;border-radius:10px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.card h3{font-size:.8rem;color:#888;font-weight:600;text-transform:uppercase;margin-bottom:9px}
+.chase-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f5f5f5}
+.chase-row:last-child{border-bottom:none}
+.chase-name{font-size:.88rem;font-weight:600;color:#1b4332}
+.chase-sip{font-size:.75rem;color:#888;margin-top:1px}
+.chase-done{font-size:.82rem;color:#52b788;font-weight:600}
+.chase-actions{display:flex;gap:6px;align-items:center}
+/* HISTORY */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat-card{background:#fff;border-radius:10px;padding:13px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.stat-card .sv{font-size:1.6rem;font-weight:800;color:#2d8a5e}
+.stat-card .sl{font-size:.7rem;color:#888;margin-top:3px}
+.pct-bar{height:5px;background:#e8f5e9;border-radius:3px;margin-top:6px;overflow:hidden}
+.pct-fill{height:100%;background:#2d8a5e;border-radius:3px}
+/* ADMIN */
+.admin-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f5f5f5}
+.admin-row:last-child{border-bottom:none}
+.admin-name{font-size:.84rem;font-weight:600;color:#1b4332;flex:1;min-width:0}
+.admin-phone{flex:1.2;padding:7px 9px;border:1.5px solid #ddd;border-radius:7px;font-size:.8rem;color:#333;min-width:0}
+.admin-phone:focus{outline:none;border-color:#2d8a5e}
+.save-btn{padding:7px 12px;background:#2d8a5e;color:#fff;border:none;border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.save-btn.saved{background:#52b788}
+/* CONTROLS */
+.ctrl-row{display:flex;gap:8px;align-items:center;margin-bottom:0}
+.ctrl-row label{font-size:.8rem;color:#666;white-space:nowrap}
+.ctrl-input{width:70px;padding:7px 8px;border:1.5px solid #ccc;border-radius:7px;font-size:.88rem;font-weight:600;color:#1b4332;text-align:center}
+.ctrl-input:focus{outline:none;border-color:#2d8a5e}
+.ctrl-btn{padding:8px 14px;background:#2d8a5e;color:#fff;border:none;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer}
+/* SECTION TITLE */
+.sec{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:12px 0 7px}
+/* TOAST */
+.toast{position:fixed;bottom:122px;left:50%;transform:translateX(-50%) translateY(60px);background:#1b4332;color:#fff;padding:9px 18px;border-radius:18px;font-size:.8rem;font-weight:600;transition:transform .28s ease;z-index:200;white-space:nowrap}
+.toast.on{transform:translateX(-50%) translateY(0)}
+/* MISC */
+.ld-msg{text-align:center;padding:28px;color:#aaa;font-size:.84rem}
+.empty{text-align:center;padding:20px;color:#aaa;font-size:.84rem}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:.65rem;font-weight:700}
+.badge-g{background:#e8f5e9;color:#2d8a5e}
+.badge-r{background:#fff0eb;color:#e07b39}
+.badge-y{background:#fff8e1;color:#f9a825}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>&#9670; Quran Khatam Tracker</h1>
+  <p>Tap your name when you complete your sipara</p>
+</div>
+<div class="bar">
+  <div><div class="lbl">Khatam No.</div><div class="val" id="kn">-</div></div>
+  <div style="text-align:right"><div class="lbl">Week</div><div class="wk" id="wr">-</div></div>
+</div>
+<div class="prog">
+  <div class="pb"><div class="pf" id="pf" style="width:0"></div></div>
+  <div class="pt" id="pt">Loading...</div>
+</div>
+
+<!-- TAB PANELS -->
+<div class="panel on" id="p-week">
+  <table>
+    <thead><tr><th class="c">#</th><th>Name</th><th class="c">Sipara</th><th class="c">Done</th></tr></thead>
+    <tbody id="tb-week"><tr><td colspan="4"><div class="ld-msg">Loading...</div></td></tr></tbody>
+  </table>
+</div>
+
+<div class="panel" id="p-chase">
+  <div id="chase-banner-area"></div>
+  <div class="card" id="chase-pending-card" style="display:none">
+    <h3>&#128226; Not yet completed</h3>
+    <div id="chase-pending"></div>
+  </div>
+  <div class="card" id="chase-done-card" style="display:none">
+    <h3>&#10003; Completed</h3>
+    <div id="chase-done"></div>
+  </div>
+</div>
+
+<div class="panel" id="p-history">
+  <div class="sec">Completion overview</div>
+  <div class="stat-grid" id="stat-grid">
+    <div class="stat-card"><div class="sv" id="sh-khatams">-</div><div class="sl">Khatams tracked</div></div>
+    <div class="stat-card"><div class="sv" id="sh-avg">-</div><div class="sl">Avg completion</div></div>
+  </div>
+  <div class="sec">Recent khatams</div>
+  <table>
+    <thead><tr><th>Khatam</th><th class="c">Completed</th><th class="c">Rate</th></tr></thead>
+    <tbody id="tb-hist"><tr><td colspan="3"><div class="ld-msg">Loading...</div></td></tr></tbody>
+  </table>
+  <div class="sec">Member completion rates</div>
+  <table>
+    <thead><tr><th>Name</th><th class="c">Done</th><th class="c">Rate</th></tr></thead>
+    <tbody id="tb-members"><tr><td colspan="3"><div class="ld-msg">Loading...</div></td></tr></tbody>
+  </table>
+</div>
+
+<div class="panel" id="p-admin">
+  <div class="card">
+    <h3>&#9881; Update Khatam Number</h3>
+    <div class="ctrl-row" style="margin-top:4px">
+      <label>Khatam No.</label>
+      <input class="ctrl-input" type="number" id="ki" min="1" placeholder="394">
+      <button class="ctrl-btn" onclick="updKhatam()">Update All</button>
+    </div>
+  </div>
+  <div class="sec">Member phone numbers</div>
+  <div class="card" style="padding:13px 14px">
+    <p style="font-size:.72rem;color:#888;margin-bottom:10px">Enter UK numbers as 07XXX XXXXXX or international format +447...</p>
+    <div id="admin-list"><div class="ld-msg">Loading...</div></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+  <button class="on" id="t-week" onclick="showTab('week')">
+    <span class="ic">&#128214;</span>This Week
+  </button>
+  <button id="t-chase" onclick="showTab('chase')">
+    <span class="ic">&#128172;</span>Chase
+  </button>
+  <button id="t-history" onclick="showTab('history')">
+    <span class="ic">&#128202;</span>History
+  </button>
+  <button id="t-admin" onclick="showTab('admin')">
+    <span class="ic">&#9881;</span>Admin
+  </button>
+</nav>
+
+<div class="toast" id="tst"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+var U='https://edghxmezscfbcaeaxuiu.supabase.co';
+var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkZ2h4bWV6c2NmYmNhZWF4dWl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNTc3NDgsImV4cCI6MjA5ODczMzc0OH0.PX3Gi4fIeNlyXmu9SEeFEdYxKzbd3DTVfxaI1kbih_U';
+var SJ={9:'S',13:'S',14:'S',15:'S',16:'S',17:'S',19:'SS',21:'S',23:'S',24:'S',27:'S',30:'SS'};
+var sb=window.supabase.createClient(U,K);
+var kh=394,mb=[],cp={},rm={},activeTab='week';
+
+/* ---- HELPERS ---- */
+function sp(p){return((kh-1+p-1)%30)+1;}
+function wr(k){
+  var b=new Date(2026,5,9),s=new Date(b.getTime()+(k-391)*7*864e5),e=new Date(s.getTime()+6*864e5);
+  var f=function(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});};
+  return f(s)+' - '+f(e);
+}
+function isChaseTime(){
+  var now=new Date();
+  var lon=new Date(now.toLocaleString('en-US',{timeZone:'Europe/London'}));
+  return lon.getDay()===3&&lon.getHours()>=18;
+}
+function normalizePhone(p){
+  if(!p)return'';
+  var c=p.replace(/[\s\-\(\)\+]/g,'');
+  if(c.startsWith('07'))return'44'+c.slice(1);
+  if(c.startsWith('447'))return c;
+  if(c.startsWith('44'))return c;
+  return c;
+}
+function waUrl(phone,name,sipara){
+  var np=normalizePhone(phone);
+  if(!np)return null;
+  var msg='Assalamu Alaikum '+name+', just a friendly reminder \u2014 your sipara for Khatam '+kh+' is Sipara '+sipara+'. Please try to complete it by tonight insha\u2019Allah \uD83E\uDD32 JazakAllah Khair';
+  return'https://wa.me/'+np+'?text='+encodeURIComponent(msg);
+}
+function sajdahHtml(s){
+  var sj=SJ[s];
+  return sj?'<span class="sb">'+(sj==='SS'?'2 Sajdahs':'1 Sajdah')+'</span>':'';
+}
+function toast(msg){
+  var t=document.getElementById('tst');t.textContent=msg;t.classList.add('on');
+  setTimeout(function(){t.classList.remove('on');},2200);
+}
+function updateHeader(){
+  document.getElementById('kn').textContent=kh;
+  document.getElementById('wr').textContent=wr(kh);
+  var dn=mb.filter(function(m){return cp[m.id]===true;}).length;
+  var pc=mb.length?Math.round(dn/mb.length*100):0;
+  document.getElementById('pf').style.width=pc+'%';
+  document.getElementById('pt').textContent=dn+' of '+mb.length+' completed \u2014 '+pc+'%';
+}
+
+/* ---- TAB SWITCHING ---- */
+window.showTab=function(tab){
+  activeTab=tab;
+  ['week','chase','history','admin'].forEach(function(t){
+    document.getElementById('p-'+t).classList.toggle('on',t===tab);
+    var btn=document.getElementById('t-'+t);
+    btn.classList.toggle('on',t===tab);
+  });
+  if(tab==='chase')renderChase();
+  if(tab==='history')renderHistory();
+  if(tab==='admin')renderAdmin();
+};
+
+/* ---- WEEK TAB ---- */
+function renderWeek(){
+  updateHeader();
+  var tb=document.getElementById('tb-week');
+  tb.innerHTML='';
+  if(!mb.length){tb.innerHTML='<tr><td colspan="4"><div class="ld-msg">Loading...</div></td></tr>';return;}
+  mb.forEach(function(m){
+    var s=sp(m.position),done=cp[m.id]===true;
+    var tr=document.createElement('tr');
+    if(done)tr.className='ok';
+    tr.innerHTML='<td class="no">'+m.position+'</td>'
+      +'<td><div class="nm">'+m.display_name+'</div></td>'
+      +'<td class="c"><span class="sn">'+s+'</span>'+sajdahHtml(s)+'</td>'
+      +'<td class="tc"><button class="btn'+(done?' done':'')+'" id="b'+m.id+'" data-id="'+m.id+'">'+(done?'&#10003; Done':'Mark Done')+'</button></td>';
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('.btn').forEach(function(b){
+    b.addEventListener('click',function(){tog(parseInt(b.getAttribute('data-id')));});
+  });
+  // Show chase tab alert on Wednesday 6pm+
+  var cBtn=document.getElementById('t-chase');
+  if(isChaseTime()&&mb.some(function(m){return!cp[m.id];})){
+    cBtn.classList.add('alert-tab');
+    var ic=cBtn.querySelector('.ic');
+    if(ic)ic.textContent='\uD83D\uDD14';
+  } else {
+    cBtn.classList.remove('alert-tab');
+    var ic2=cBtn.querySelector('.ic');
+    if(ic2)ic2.textContent='\uD83D\uDCAC';
+  }
+}
+
+/* ---- TOGGLE COMPLETION ---- */
+function tog(id){
+  var was=cp[id]===true;cp[id]=!was;renderWeek();
+  sb.from('qk_completions').upsert({khatam_number:kh,member_id:id,completed:!was,
+    completed_at:!was?new Date().toISOString():null},{onConflict:'khatam_number,member_id'}).then(function(r){
+    if(r.error){cp[id]=was;renderWeek();toast('Error \u2014 try again');}
+    else toast(!was?'\u2713 Marked complete':'Unmarked');
+  });
+}
+
+/* ---- CHASE TAB ---- */
+function renderChase(){
+  updateHeader();
+  var banner=document.getElementById('chase-banner-area');
+  var pendingCard=document.getElementById('chase-pending-card');
+  var doneCard=document.getElementById('chase-done-card');
+  var pendingEl=document.getElementById('chase-pending');
+  var doneEl=document.getElementById('chase-done');
+
+  var pending=mb.filter(function(m){return!cp[m.id];});
+  var done=mb.filter(function(m){return cp[m.id]===true;});
+
+  if(isChaseTime()&&pending.length){
+    banner.innerHTML='<div class="chase-banner"><h2>\uD83D\uDD14 Wednesday Reminder Time</h2><p>'+pending.length+' member'+(pending.length>1?'s':'')+' still to complete \u2014 tap WhatsApp to send reminder</p></div>';
+  } else if(!pending.length){
+    banner.innerHTML='<div class="chase-idle" style="background:#f0fff6;border-color:#c8e6c9"><p style="color:#2d6a4f">\u2713 All '+mb.length+' siparas completed this week!</p></div>';
+  } else {
+    var lon=new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/London'}));
+    var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var day=days[lon.getDay()];
+    banner.innerHTML='<div class="chase-idle"><p>Reminders go live Wednesday from 6pm UK time</p><div class="ctime">Today is '+day+' \u2014 '+pending.length+' sipara'+(pending.length>1?'s':'')+' outstanding</div></div>';
+  }
+
+  if(pending.length){
+    pendingCard.style.display='';
+    pendingEl.innerHTML='';
+    pending.forEach(function(m){
+      var s=sp(m.position);
+      var url=m.phone?waUrl(m.phone,m.display_name,s):null;
+      var isSent=rm[m.id]===true;
+      var div=document.createElement('div');
+      div.className='chase-row';
+      div.innerHTML='<div><div class="chase-name">'+m.display_name+'</div><div class="chase-sip">Sipara '+s+(SJ[s]?' ('+SJ[s]+')':'')+'</div></div>'
+        +'<div class="chase-actions">'
+        +(url?'<a class="wa-btn" href="'+url+'" target="_blank" data-id="'+m.id+'" onclick="markSent('+m.id+')">'
+          +'<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.096.539 4.063 1.482 5.774L0 24l6.388-1.456A11.938 11.938 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.816 9.816 0 01-5.001-1.371l-.36-.213-3.714.847.876-3.613-.234-.372A9.785 9.785 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/></svg>'
+          +'Send'+'</a>':'<span style="font-size:.72rem;color:#ccc">No number</span>')
+        +(isSent?'<span class="sent-btn">\u2713 Sent</span>':'')
+        +'</div>';
+      pendingEl.appendChild(div);
+    });
+  } else {
+    pendingCard.style.display='none';
+  }
+
+  if(done.length){
+    doneCard.style.display='';
+    doneEl.innerHTML='';
+    done.forEach(function(m){
+      var div=document.createElement('div');
+      div.className='chase-row';
+      div.innerHTML='<div class="chase-name">'+m.display_name+'</div><div class="chase-done">\u2713 Complete</div>';
+      doneEl.appendChild(div);
+    });
+  } else {
+    doneCard.style.display='none';
+  }
+}
+
+window.markSent=function(id){
+  rm[id]=true;
+  sb.from('qk_reminders').upsert({khatam_number:kh,member_id:id,sent_at:new Date().toISOString()},{onConflict:'khatam_number,member_id'}).then(function(){});
+  setTimeout(function(){if(activeTab==='chase')renderChase();},400);
+};
+
+/* ---- HISTORY TAB ---- */
+function renderHistory(){
+  var tbH=document.getElementById('tb-hist');
+  var tbM=document.getElementById('tb-members');
+  tbH.innerHTML='<tr><td colspan="3"><div class="ld-msg">Loading...</div></td></tr>';
+  tbM.innerHTML='<tr><td colspan="3"><div class="ld-msg">Loading...</div></td></tr>';
+
+  sb.from('qk_completions').select('khatam_number,member_id,completed').then(function(r){
+    if(r.error||!r.data){tbH.innerHTML='<tr><td colspan="3"><div class="empty">No data yet</div></td></tr>';return;}
+    var data=r.data;
+
+    // Per-khatam stats
+    var byK={};
+    data.forEach(function(c){
+      if(!byK[c.khatam_number])byK[c.khatam_number]={total:0,done:0};
+      byK[c.khatam_number].total++;
+      if(c.completed)byK[c.khatam_number].done++;
+    });
+    var kList=Object.keys(byK).map(Number).sort(function(a,b){return b-a;}).slice(0,12);
+    var totalPct=kList.reduce(function(s,k){return s+Math.round(100*byK[k].done/byK[k].total);},0);
+    var avgPct=kList.length?Math.round(totalPct/kList.length):0;
+    document.getElementById('sh-khatams').textContent=kList.length;
+    document.getElementById('sh-avg').textContent=avgPct+'%';
+
+    tbH.innerHTML='';
+    kList.forEach(function(k){
+      var d=byK[k],pct=Math.round(100*d.done/d.total);
+      var badge=pct===100?'<span class="badge badge-g">100%</span>':pct>=70?'<span class="badge badge-y">'+pct+'%</span>':'<span class="badge badge-r">'+pct+'%</span>';
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td style="font-weight:600;color:#1b4332">#'+k+(k===kh?' <span style="font-size:.65rem;color:#888">(now)</span>':'')+'</td>'
+        +'<td class="c" style="color:#555">'+d.done+' / '+d.total+'</td>'
+        +'<td class="c">'+badge+'</td>';
+      tbH.appendChild(tr);
+    });
+
+    // Per-member stats
+    var byM={};
+    mb.forEach(function(m){byM[m.id]={name:m.display_name,total:0,done:0};});
+    data.forEach(function(c){
+      if(byM[c.member_id]){byM[c.member_id].total++;if(c.completed)byM[c.member_id].done++;}
+    });
+    var mList=Object.values(byM).filter(function(m){return m.total>0;}).sort(function(a,b){
+      return(b.done/b.total)-(a.done/a.total);
+    });
+
+    tbM.innerHTML='';
+    mList.forEach(function(m){
+      var pct=Math.round(100*m.done/m.total);
+      var badge=pct===100?'<span class="badge badge-g">&#11088;</span>':pct>=75?'<span class="badge badge-g">'+pct+'%</span>':pct>=50?'<span class="badge badge-y">'+pct+'%</span>':'<span class="badge badge-r">'+pct+'%</span>';
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td class="nm">'+m.name+'</td>'
+        +'<td class="c" style="font-size:.82rem;color:#555">'+m.done+'/'+m.total+'</td>'
+        +'<td class="c">'+badge+'<div class="pct-bar" style="margin-top:4px"><div class="pct-fill" style="width:'+pct+'%"></div></div></td>';
+      tbM.appendChild(tr);
+    });
+    if(!mList.length)tbM.innerHTML='<tr><td colspan="3"><div class="empty">Complete at least one khatam to see stats</div></td></tr>';
+  });
+}
+
+/* ---- ADMIN TAB ---- */
+function renderAdmin(){
+  document.getElementById('ki').value=kh;
+  var list=document.getElementById('admin-list');
+  list.innerHTML='';
+  mb.forEach(function(m){
+    var div=document.createElement('div');
+    div.className='admin-row';
+    div.innerHTML='<div class="admin-name">'+m.display_name+'</div>'
+      +'<input class="admin-phone" type="tel" placeholder="07XXX XXXXXX" value="'+(m.phone||'')+'" id="ph-'+m.id+'">'
+      +'<button class="save-btn" id="sv-'+m.id+'" onclick="savePhone('+m.id+')">Save</button>';
+    list.appendChild(div);
+  });
+}
+
+window.savePhone=function(id){
+  var val=document.getElementById('ph-'+id).value.trim();
+  var btn=document.getElementById('sv-'+id);
+  btn.textContent='...';
+  sb.from('qk_members').update({phone:val||null}).eq('id',id).then(function(r){
+    if(r.error){btn.textContent='Error';return;}
+    var m=mb.find(function(x){return x.id===id;});
+    if(m)m.phone=val||null;
+    btn.textContent='Saved';btn.classList.add('saved');
+    setTimeout(function(){btn.textContent='Save';btn.classList.remove('saved');},2000);
+  });
+};
+
+window.updKhatam=function(){
+  var v=parseInt(document.getElementById('ki').value);
+  if(!v||v<1){toast('Enter a valid number');return;}
+  sb.from('qk_config').update({khatam_number:v}).eq('id',1).then(function(r){
+    if(r.error){toast('Error updating');return;}
+    kh=v;cp={};rm={};
+    lc().then(function(){lr().then(function(){renderWeek();if(activeTab==='chase')renderChase();});});
+    toast('\u2713 Khatam updated to '+v);
+  });
+};
+
+/* ---- DATA LOADING ---- */
+function lc(){
+  return sb.from('qk_completions').select('member_id,completed').eq('khatam_number',kh).then(function(r){
+    cp={};if(r.data)r.data.forEach(function(c){cp[c.member_id]=c.completed;});
+  });
+}
+function lr(){
+  return sb.from('qk_reminders').select('member_id').eq('khatam_number',kh).then(function(r){
+    rm={};if(r.data)r.data.forEach(function(c){rm[c.member_id]=true;});
+  });
+}
+
+/* ---- REALTIME ---- */
+function subscribe(){
+  sb.channel('kh-main')
+    .on('postgres_changes',{event:'*',schema:'public',table:'qk_completions'},function(p){
+      if(p.new&&p.new.khatam_number===kh){cp[p.new.member_id]=p.new.completed;renderWeek();if(activeTab==='chase')renderChase();}
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'qk_config'},function(p){
+      if(p.new&&p.new.khatam_number!==kh){
+        kh=p.new.khatam_number;cp={};rm={};
+        lc().then(function(){lr().then(function(){renderWeek();if(activeTab==='chase')renderChase();});});
+        toast('Khatam updated to '+kh);
+      }
+    })
+    .subscribe();
+}
+
+/* ---- INIT ---- */
+function init(){
+  sb.from('qk_config').select('khatam_number').eq('id',1).single().then(function(r){
+    if(r.data)kh=r.data.khatam_number;
+    return sb.from('qk_members').select('*').order('position');
+  }).then(function(r){
+    if(r.data)mb=r.data;
+    return lc();
+  }).then(function(){
+    return lr();
+  }).then(function(){
+    renderWeek();
+    subscribe();
+  });
+}
+init();
+}());
+</script>
+</body>
+</html>
