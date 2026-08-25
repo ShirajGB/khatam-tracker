@@ -418,25 +418,36 @@ function normalizePhone(p){
   if(c.startsWith('07'))return'44'+c.slice(1);
   return c;
 }
-function waUrl(phone,name,sipara,isSun){
+function wedTemplates(name,sipara,main,others,remaining,total){
+  var t=Math.floor(Math.random()*6);
+  var stick='\uD83E\uDEF4';
+  if(remaining===1){
+    return'Assalamu Alaikum '+name+' \uD83D\uDE2C YOU are the LAST one! '+(total-1)+' out of '+total+' have completed \u2014 everyone\'s watching the tracker and your name is top of the naughty list! \uD83D\uDC40\n\n'+stick+' THE STICK IS OFFICIALLY OUT '+stick+'\n\nHaji Gulam Bapu, Hajiyani Zubeda Laheri and ALL our beloved are waiting specifically for YOUR Sipara '+sipara+'!\n\nComplete it and bring us to 100% tonight insha\'Allah! \uD83C\uDFC6 The whole group is rooting for you!\n\nJazakAllah Khair from all '+(total-1)+' who are waiting! \uD83D\uDC9A';
+  }
+  if(t===0){
+    return'Assalamu Alaikum '+name+' \uD83D\uDE0A Sipara '+sipara+' for Khatam No.'+kh+' \u2014 just a friendly reminder before we have to get the stick out! '+stick+'\n\n'+main+' is patiently waiting... but patience has limits! \uD83D\uDE04\n\nMay Allah make it easy tonight insha\'Allah \uD83E\uDD32 JazakAllah Khair \uD83D\uDC9A';
+  } else if(t===1){
+    return'Assalamu Alaikum '+name+' \uD83D\uDEA8 Emergency broadcast \u2014 Sipara '+sipara+' for Khatam No.'+kh+' is still UNCHECKED!\n\n'+main+' has been waiting ALL week! Don\'t let the side down tonight insha\'Allah \uD83D\uDE05\n\nThe stick is within reach... '+stick+' JazakAllah Khair \uD83C\uDF39';
+  } else if(t===2){
+    return'Assalamu Alaikum '+name+' \uD83D\uDE04 Breaking news \u2014 '+main+' has filed a complaint with the heavens!\n\nSipara '+sipara+' for Khatam No.'+kh+' remains uncollected! Please resolve tonight before we escalate to the digital cane '+stick+'\n\nJazakAllah Khair \uD83D\uDC9A';
+  } else if(t===3){
+    return'Assalamu Alaikum '+name+' \uD83D\uDC9A We love you... which is exactly why we\'re chasing you! \uD83D\uDE0A\n\nEveryone\'s waiting on Sipara '+sipara+' \u2014 '+main+' and the others are watching from above \uD83D\uDC40\n\nDon\'t make us get the stick out! '+stick+' Tonight insha\'Allah \uD83E\uDD32 JazakAllah Khair \uD83C\uDF39';
+  } else if(t===4){
+    return'Assalamu Alaikum '+name+' \u23F0 The sipara clock is ticking!\n\nSipara '+sipara+' for Khatam No.'+kh+' by 11:59pm tonight! '+main+' said they\'re counting on you specifically \uD83D\uDE04\n\nComplete it and earn your place in the hall of fame! \uD83C\uDFC6 JazakAllah Khair \uD83C\uDF39';
+  } else {
+    return'Assalamu Alaikum '+name+' \uD83D\uDC9A\n\nGentle reminder \u2014 Sipara '+sipara+' for Khatam No.'+kh+' by tonight insha\'Allah.\n\n'+main+' is striving for these blessings and is relying on you \uD83E\uDD32\n\n'+others+' and our other beloved are hungry and craving for the rewards. Our beloved souls cannot afford to miss these blessings '+stick+'\n\nMay Allah accept from us all. JazakAllah Khair \uD83C\uDF39';
+  }
+}
+function waUrl(phone,name,sipara,isSun,remaining,total){
   var np=normalizePhone(phone);if(!np)return null;
   var shuffled=DECEASED.slice().sort(function(){return Math.random()-.5;});
   var main=shuffled[0];
   var others=shuffled.slice(1,4).join(', ');
-  var day=dayName();
   var msg;
   if(isSun){
-    msg='Assalamu Alaikum '+name+' \uD83C\uDF38\n\n'
-      +'A new week of Khatam has begun, Khatam No.'+kh+'. Your sipara is Sipara '+sipara+'.\n\n'
-      +main+' is eagerly awaiting the blessings of your recitation and is relying on you insha\u2019Allah \uD83E\uDD32\n\n'
-      +others+' and our other beloved are also hungry and craving for these rewards from Allah.\n\n'
-      +'May Allah make it easy, accept from us all, and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
+    msg='Assalamu Alaikum '+name+' \uD83C\uDF38\n\nA new week of Khatam has begun, Khatam No.'+kh+'. Your sipara is Sipara '+sipara+'.\n\n'+main+' is eagerly awaiting the blessings of your recitation and is relying on you insha\u2019Allah \uD83E\uDD32\n\n'+others+' and our other beloved are also hungry and craving for these rewards from Allah.\n\nMay Allah make it easy and accept from us all, and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
   } else {
-    msg='Assalamu Alaikum '+name+' \uD83D\uDC9A\n\n'
-      +'A gentle reminder \u2014 Sipara '+sipara+' for Khatam No.'+kh+' by tonight insha\u2019Allah.\n\n'
-      +main+' is striving for these blessings this '+day+' and is relying on you to complete it \uD83E\uDD32\n\n'
-      +others+' and our other beloved are also hungry and craving for the rewards of this Khatam.\n\n'
-      +'May Allah accept from us all, grant our beloved Jannah Al-Firdaus, and shower His blessings upon '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83C\uDF39';
+    msg=wedTemplates(name,sipara,main,others,remaining||0,total||30);
   }
   return'https://wa.me/'+np+'?text='+encodeURIComponent(msg);
 }
@@ -563,7 +574,7 @@ function renderChase(){
     }
     pending.forEach(function(m){
       var s=sp(m.position),streak=getStreak(m.id);
-      var url=m.phone?waUrl(m.phone,m.display_name,s,isSun&&!isWed):null;
+      var url=m.phone?waUrl(m.phone,m.display_name,s,isSun&&!isWed,pending.length,mb.length):null;
       var isSent=rm[m.id]===true;
       var div=document.createElement('div');
       div.className='chase-row';
@@ -667,7 +678,7 @@ function rmStep(isSun){
   document.getElementById('rm-avatar').textContent='\uD83D\uDCF1';
   document.getElementById('rm-name').textContent=m.display_name;
   document.getElementById('rm-sip').textContent='Sipara '+s+(SAJDAH[s]?' \u2022 '+SAJDAH[s]:'');
-  document.getElementById('rm-wa-link').href=waUrl(m.phone,m.display_name,s,isSun);
+  document.getElementById('rm-wa-link').href=waUrl(m.phone,m.display_name,s,isSun,rmQueue.length-rmIdx,mb.length);
   document.getElementById('rm-wa-link').style.display='flex';
   document.getElementById('rm-hint').style.display='block';
   document.getElementById('rm-actions').style.display='flex';
