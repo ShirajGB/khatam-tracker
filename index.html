@@ -732,7 +732,7 @@ function renderHistory(){
     mb.forEach(function(m){byM[m.id]={name:m.display_name,total:0,done:0,streak:getStreak(m.id)};});
     data.forEach(function(c){if(byM[c.member_id]){byM[c.member_id].total++;if(c.completed)byM[c.member_id].done++;}});
     var mList=Object.values(byM).filter(function(m){return m.total>0;}).sort(function(a,b){
-      var pa=a.done/a.total,pb=b.done/b.total;return pb!==pa?pb-pa:b.streak-a.streak;
+      var pa=a.done/a.total,pb=b.done/b.total;return pb!==pa?pb-pa:b.streak!==a.streak?b.streak-a.streak:Math.random()-.5;
     });
     tbM.innerHTML='';
     mList.forEach(function(m,i){
