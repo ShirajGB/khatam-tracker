@@ -710,8 +710,8 @@ function renderHistory(){
     if(!r.data||r.error){tbH.innerHTML='<tr><td colspan="3"><div class="empty">No data yet</div></td></tr>';return;}
     var data=r.data,byK={};
     data.forEach(function(c){
-      if(!byK[c.khatam_number])byK[c.khatam_number]={total:0,done:0};
-      byK[c.khatam_number].total++;if(c.completed)byK[c.khatam_number].done++;
+      if(!byK[c.khatam_number])byK[c.khatam_number]={total:mb.length,done:0};
+      if(c.completed)byK[c.khatam_number].done++;
     });
     var kList=Object.keys(byK).map(Number).sort(function(a,b){return b-a;}).slice(0,15);
     var avgPct=kList.length?Math.round(kList.reduce(function(s,k){return s+Math.round(100*byK[k].done/byK[k].total);},0)/kList.length):0;
