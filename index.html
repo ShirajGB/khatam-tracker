@@ -419,23 +419,23 @@ function normalizePhone(p){
   return c;
 }
 function wedTemplates(name,sipara,main,others,remaining,total){
-  var t=Math.floor(Math.random()*6);
   var stick='\uD83E\uDEF4';
+  var week=kh%4;
   if(remaining===1){
-    return'Assalamu Alaikum '+name+' \uD83D\uDE2C YOU are the LAST one! '+(total-1)+' out of '+total+' have completed \u2014 everyone\'s watching the tracker and your name is top of the naughty list! \uD83D\uDC40\n\n'+stick+' THE STICK IS OFFICIALLY OUT '+stick+'\n\nHaji Gulam Bapu, Hajiyani Zubeda Laheri and ALL our beloved are waiting specifically for YOUR Sipara '+sipara+'!\n\nComplete it and bring us to 100% tonight insha\'Allah! \uD83C\uDFC6 The whole group is rooting for you!\n\nJazakAllah Khair from all '+(total-1)+' who are waiting! \uD83D\uDC9A';
+    return'Assalamu Alaikum '+name+' \uD83D\uDE2C YOU are the LAST one! '+(total-1)+' out of '+total+' have completed \u2014 everyone\'s watching the tracker and your name is top of the naughty list! \uD83D\uDC40\n\n'+stick+' THE STICK IS OFFICIALLY OUT '+stick+'\n\n'+main+', '+others+' and ALL our beloved Marhoomins are waiting specifically for YOUR Sipara '+sipara+'!\n\nComplete it and bring us to 100% tonight insha\'Allah! \uD83C\uDFC6 The whole group is rooting for you!\n\nMay Allah send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair from all '+(total-1)+' who are waiting! \uD83D\uDC9A';
   }
-  if(t===0){
-    return'Assalamu Alaikum '+name+' \uD83D\uDE0A Sipara '+sipara+' for Khatam No.'+kh+' \u2014 just a friendly reminder before we have to get the stick out! '+stick+'\n\n'+main+' is patiently waiting... but patience has limits! \uD83D\uDE04\n\nMay Allah make it easy tonight insha\'Allah \uD83E\uDD32 JazakAllah Khair \uD83D\uDC9A';
-  } else if(t===1){
-    return'Assalamu Alaikum '+name+' \uD83D\uDEA8 Emergency broadcast \u2014 Sipara '+sipara+' for Khatam No.'+kh+' is still UNCHECKED!\n\n'+main+' has been waiting ALL week! Don\'t let the side down tonight insha\'Allah \uD83D\uDE05\n\nThe stick is within reach... '+stick+' JazakAllah Khair \uD83C\uDF39';
-  } else if(t===2){
-    return'Assalamu Alaikum '+name+' \uD83D\uDE04 Breaking news \u2014 '+main+' has filed a complaint with the heavens!\n\nSipara '+sipara+' for Khatam No.'+kh+' remains uncollected! Please resolve tonight before we escalate to the digital cane '+stick+'\n\nJazakAllah Khair \uD83D\uDC9A';
-  } else if(t===3){
-    return'Assalamu Alaikum '+name+' \uD83D\uDC9A We love you... which is exactly why we\'re chasing you! \uD83D\uDE0A\n\nEveryone\'s waiting on Sipara '+sipara+' \u2014 '+main+' and the others are watching from above \uD83D\uDC40\n\nDon\'t make us get the stick out! '+stick+' Tonight insha\'Allah \uD83E\uDD32 JazakAllah Khair \uD83C\uDF39';
-  } else if(t===4){
-    return'Assalamu Alaikum '+name+' \u23F0 The sipara clock is ticking!\n\nSipara '+sipara+' for Khatam No.'+kh+' by 11:59pm tonight! '+main+' said they\'re counting on you specifically \uD83D\uDE04\n\nComplete it and earn your place in the hall of fame! \uD83C\uDFC6 JazakAllah Khair \uD83C\uDF39';
+  if(week===0){
+    /* WEEK 1 \u2014 Emotional & Personal */
+    return'Assalamu Alaikum '+name+' \uD83D\uDC9A\n\nEvery week we come together for one beautiful purpose \u2014 to send the reward of Allah\'s blessed words to our Marhoomins.\n\n'+main+' can no longer earn for themselves \u2014 *we are their sadaqah*. Every ayah of Sipara '+sipara+' you recite reaches them directly \uD83E\uDD32\n\n'+others+' and all our beloved are also waiting on you tonight.\n\nDon\'t let your sipara be the one missing from their scale. Khatam No.'+kh+' \u2014 deadline 11:59pm tonight insha\'Allah.\n\nMay Allah accept from us all and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
+  } else if(week===1){
+    /* WEEK 2 \u2014 Humorous & Assertive */
+    return'Assalamu Alaikum '+name+' \uD83D\uDE04\n\nRight, let\'s have a little chat shall we \uD83D\uDE02\n\nSipara '+sipara+' for Khatam No.'+kh+' is still UNCHECKED. The Quran didn\'t read itself last week and it\'s not going to read itself tonight either \uD83D\uDE05\n\n'+main+' has been waiting ALL week and has now officially filed a complaint with the heavens \uD83D\uDE2C\n\n'+others+' are also watching from above \uD83D\uDC40\n\nImagine on Qiyamah they ask who was responsible for Sipara '+sipara+'... don\'t make it awkward! The stick is within reach '+stick+'\n\nTonight by 11:59pm insha\'Allah \uD83E\uDD32 May Allah send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
+  } else if(week===2){
+    /* WEEK 3 \u2014 Family & Community */
+    return'Assalamu Alaikum '+name+' \uD83D\uDC9A\n\nDo you know what makes this Khatam so special? It\'s not one person sitting alone reciting \u2014 it\'s ALL of us, each carrying one piece. United. Connected. One Khatam.\n\nRight now Sipara '+sipara+' for Khatam No.'+kh+' is the missing piece \u2014 and the chain is only as strong as its weakest link \uD83D\uDCAA\n\n'+main+' built this family. '+others+' and all our Marhoomins are relying on you to hold your link tonight \uD83E\uDD32\n\nDon\'t be the missing link! Deadline 11:59pm insha\'Allah.\n\nMay Allah accept it from all of us and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
   } else {
-    return'Assalamu Alaikum '+name+' \uD83D\uDC9A\n\nGentle reminder \u2014 Sipara '+sipara+' for Khatam No.'+kh+' by tonight insha\'Allah.\n\n'+main+' is striving for these blessings and is relying on you \uD83E\uDD32\n\n'+others+' and our other beloved are hungry and craving for the rewards. Our beloved souls cannot afford to miss these blessings '+stick+'\n\nMay Allah accept from us all. JazakAllah Khair \uD83C\uDF39';
+    /* WEEK 4 \u2014 Reward & Urgency */
+    return'Assalamu Alaikum '+name+' \uD83D\uDC9A\n\nQuick question \u2014 if someone offered you a gift that would reach your loved ones in their graves tonight, would you delay it? \uD83E\uDD14\n\nThat\'s exactly what Sipara '+sipara+' is. A gift. A light. Reaching '+main+', '+others+' and all our beloved Marhoomins.\n\nNot tomorrow. Not later. Tonight. Khatam No.'+kh+' by 11:59pm. It takes 20 minutes. The reward lasts forever \u23F0\n\nThe stick is on standby '+stick+' but we\'d much rather celebrate you in the hall of fame \uD83C\uDFC6\n\nMay Allah accept our Khatam, grant our Marhoomins the highest Jannah, and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
   }
 }
 function waUrl(phone,name,sipara,isSun,remaining,total){
