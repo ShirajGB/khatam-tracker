@@ -418,6 +418,22 @@ function normalizePhone(p){
   if(c.startsWith('07'))return'44'+c.slice(1);
   return c;
 }
+function sunTemplates(name,sipara,main,others){
+  var week=kh%4;
+  if(week===0){
+    /* SUNDAY WEEK 1 \u2014 Fresh start */
+    return'Assalamu Alaikum '+name+' \uD83C\uDF38\n\nNew week, new Khatam, new chance to be an early bird instead of a Wednesday-night panic reader \uD83D\uDE04\n\nKhatam No.'+kh+' has begun and your sipara is Sipara '+sipara+'.\n\n'+main+' has already put the kettle on and is waiting patiently for your recitation \uD83E\uDD32\n\n'+others+' and all our beloved Marhoomins are craving these rewards too.\n\nNo rush... but the early bird gets the barakah \uD83D\uDC26\n\nMay Allah make it easy and accept from us all, and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
+  } else if(week===1){
+    /* SUNDAY WEEK 2 \u2014 Playful heads-up */
+    return'Assalamu Alaikum '+name+' \uD83D\uDE0A\n\nThis is your friendly Sunday heads-up \u2014 no stick, no sirens, just love \uD83D\uDC9A (the stick comes out Wednesday \uD83E\uDEF4)\n\nKhatam No.'+kh+' \u2014 you\'ve got Sipara '+sipara+' this week.\n\n'+main+' has been telling everyone upstairs that you\'re the reliable one... don\'t make them a liar \uD83D\uDE05\n\n'+others+' and our other beloved are watching with hopeful eyes \uD83D\uDC40\n\nA little every day and you\'ll be done before you know it insha\'Allah \uD83E\uDD32\n\nMay Allah send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
+  } else if(week===2){
+    /* SUNDAY WEEK 3 \u2014 Gift framing */
+    return'Assalamu Alaikum '+name+' \uD83C\uDF81\n\nImagine a parcel arriving every single week at the door of '+main+' \u2014 that parcel is your Sipara '+sipara+' \uD83D\uDCE6\n\nKhatam No.'+kh+' has started, and the delivery is expected by Wednesday 11:59pm \uD83D\uDE9A\n\n'+others+' and all our Marhoomins are also on the delivery list \u2014 don\'t leave them a \"sorry we missed you\" card \uD83D\uDE02\n\nMay Allah make it light on your tongue and heavy on your scale insha\'Allah \uD83E\uDD32\n\nMay Allah send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
+  } else {
+    /* SUNDAY WEEK 4 \u2014 Quiet & warm */
+    return'Assalamu Alaikum '+name+' \uD83C\uDF19\n\nA quiet Sunday note before the week gets noisy.\n\nKhatam No.'+kh+' \u2014 Sipara '+sipara+' is yours this week.\n\nSomewhere beyond this world, '+main+' is hoping you\'ll find twenty peaceful minutes for them. '+others+' and all our beloved are hoping the same \uD83E\uDD32\n\nNo pressure today \u2014 just a gentle nudge to make a start. Future-you on Wednesday night will be very grateful \uD83D\uDE0C\n\nMay Allah accept from us all and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
+  }
+}
 function wedTemplates(name,sipara,main,others,remaining,total){
   var stick='\uD83E\uDEF4';
   var week=kh%4;
@@ -445,7 +461,7 @@ function waUrl(phone,name,sipara,isSun,remaining,total){
   var others=shuffled.slice(1,4).join(', ');
   var msg;
   if(isSun){
-    msg='Assalamu Alaikum '+name+' \uD83C\uDF38\n\nA new week of Khatam has begun, Khatam No.'+kh+'. Your sipara is Sipara '+sipara+'.\n\n'+main+' is eagerly awaiting the blessings of your recitation and is relying on you insha\u2019Allah \uD83E\uDD32\n\n'+others+' and our other beloved are also hungry and craving for these rewards from Allah.\n\nMay Allah make it easy and accept from us all, and send His choicest blessings upon our beloved '+PROPHET+' \u2764\uFE0F\n\nJazakAllah Khair \uD83D\uDC9A';
+    msg=sunTemplates(name,sipara,main,others);
   } else {
     msg=wedTemplates(name,sipara,main,others,remaining||0,total||30);
   }
