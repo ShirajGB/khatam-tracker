@@ -203,6 +203,26 @@ td{padding:9px 7px;vertical-align:middle}
 .anv-d.hit{background:rgba(255,215,0,.18);border-color:#FFD700}
 .anv-dua{font-size:.74rem;font-style:italic;color:#d6ecde;margin:2px auto 10px;max-width:340px;line-height:1.5}
 .anv-share{display:inline-block;background:#25d366;color:#fff;font-weight:700;font-size:.78rem;padding:8px 18px;border-radius:22px;text-decoration:none}
+/* MILAD WEEK (12 Rabi ul Awwal) */
+.mw{position:relative;overflow:hidden;text-align:center;color:#fff;padding:20px 14px 16px;background:linear-gradient(160deg,var(--c1),var(--c2));border-bottom:3px solid var(--acc);box-shadow:inset 0 0 40px rgba(255,255,255,.12)}
+.mw::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.25),transparent 40%),radial-gradient(circle at 85% 80%,rgba(255,255,255,.18),transparent 45%);pointer-events:none}
+.mw::after{content:'\2726   \2727   \2726   \2727   \2726';position:absolute;top:6px;left:0;right:0;color:var(--acc);opacity:.55;letter-spacing:14px;font-size:.8rem;animation:mwTwinkle 3s ease-in-out infinite;pointer-events:none}
+@keyframes mwTwinkle{0%,100%{opacity:.25}50%{opacity:.8}}
+.mw>*{position:relative;z-index:1}
+.mw-tag{display:inline-block;background:var(--acc);color:#1b1b1b;font-weight:800;font-size:.64rem;letter-spacing:1.8px;padding:4px 14px;border-radius:20px;margin-top:10px}
+.mw-bis{font-size:1.9rem;line-height:1.4;color:var(--acc);margin:6px 0 0;text-shadow:0 0 14px rgba(0,0,0,.25)}
+.mw-title{font-size:1.25rem;font-weight:800;margin:2px 0;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+.mw-sub{font-size:.76rem;opacity:.92;letter-spacing:.4px}
+.mw-date{display:inline-block;margin:10px 0 12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:6px 14px;font-size:.74rem;line-height:1.4}
+.mw-card{background:rgba(255,255,255,.96);color:#222;border-radius:16px;padding:16px 16px 12px;margin:2px 4px 12px;box-shadow:0 8px 22px rgba(0,0,0,.28);border-top:5px solid var(--acc)}
+.mw-card .q{font-size:1.02rem;font-weight:700;line-height:1.5;color:#1c1c1c}
+.mw-card .src{font-size:.7rem;color:#777;margin-top:8px;font-style:italic}
+.mw-card .hd{font-size:.62rem;letter-spacing:1.6px;font-weight:800;color:var(--c1);margin-bottom:6px}
+.mw-sal{font-size:.82rem;font-weight:700;color:var(--acc)}
+.mw-dots{display:flex;gap:7px;justify-content:center;margin:10px 0 8px}
+.mw-dots span{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.55)}
+.mw-dots span.on{background:var(--acc);border-color:#fff;transform:scale(1.35);box-shadow:0 0 10px var(--acc)}
+.mw-dots span.mil{outline:2px solid var(--acc);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -217,6 +237,9 @@ td{padding:9px 7px;vertical-align:middle}
 </div>
 
 <!-- ANNIVERSARY COMMEMORATION (auto-shown in the week of a passing, Gregorian or Islamic) -->
+<!-- MILAD WEEK: a colourful page with a hadith on each day of the week containing 12 Rabi ul Awwal -->
+<div id="milad-wrap"></div>
+
 <div id="anniv-wrap"></div>
 
 <!-- TUESDAY COMMEMORATIVE THEME -->
@@ -596,9 +619,66 @@ function waUrl(phone,name,sipara,isSun,remaining,total){
   return'https://wa.me/'+np+'?text='+encodeURIComponent(msg);
 }
 
+/* MILAD WEEK */
+function miladToday(){
+  var q=new URLSearchParams(location.search).get('miladDate');
+  if(q){var p=q.split('-');return new Date(+p[0],+p[1]-1,+p[2],12);}
+  return londonNow();
+}
+var MILAD_THEMES=[
+  {c1:'#0f9d58',c2:'#064e3b',acc:'#ffd54a'},
+  {c1:'#2563eb',c2:'#1e1b4b',acc:'#ffe08a'},
+  {c1:'#db2777',c2:'#4c0519',acc:'#ffd1e8'},
+  {c1:'#f59e0b',c2:'#78350f',acc:'#fff1b8'},
+  {c1:'#7c3aed',c2:'#2e1065',acc:'#f5d0fe'},
+  {c1:'#0d9488',c2:'#134e4a',acc:'#b8fff0'},
+  {c1:'#f97316',c2:'#7c2d12',acc:'#ffe4b5'}
+];
+var MILAD_DAY_THEME={c1:'#14803c',c2:'#052e16',acc:'#ffd700'};
+var MILAD_HADITH=[
+  {t:'The best among you are those who have the best character.',s:'Sahih al-Bukhari'},
+  {t:'None of you truly believes until he loves for his brother what he loves for himself.',s:'Sahih al-Bukhari & Sahih Muslim'},
+  {t:'The strong person is not the one who overpowers others, but the one who controls himself when angry.',s:'Sahih al-Bukhari & Sahih Muslim'},
+  {t:'Whoever believes in Allah and the Last Day, let him speak good or else remain silent.',s:'Sahih al-Bukhari & Sahih Muslim'},
+  {t:'The best of you are those who learn the Quran and teach it.',s:'Sahih al-Bukhari'},
+  {t:'The most beloved deeds to Allah are those done consistently, even if they are small.',s:'Sahih al-Bukhari & Sahih Muslim'},
+  {t:'Make things easy and do not make them difficult; give glad tidings and do not drive people away.',s:'Sahih al-Bukhari & Sahih Muslim'}
+];
+var MILAD_DAY_HADITH={t:'None of you truly believes until I am more beloved to him than his father, his children and all of mankind.',s:'Sahih al-Bukhari'};
+var miladSig='';
+function renderMilad(){
+  var el=document.getElementById('milad-wrap');
+  var t=miladToday(),today=new Date(t.getFullYear(),t.getMonth(),t.getDate(),12);
+  var base=new Date(2026,7,18,12),diff=Math.round((today-base)/864e5);
+  var w=Math.floor(diff/7),idx=diff-7*w,milIdx=-1,i;
+  for(i=0;i<7;i++){
+    var dd=new Date(2026,7,18+w*7+i,12),h=hij(dd);
+    if(h&&h.m===3&&h.d===12)milIdx=i;
+  }
+  var sig=milIdx<0?'':(today.getTime()+'|'+milIdx);
+  if(sig===miladSig)return;
+  miladSig=sig;
+  if(milIdx<0){el.innerHTML='';return;}
+  var isDay=(idx===milIdx),th=isDay?MILAD_DAY_THEME:MILAD_THEMES[idx%7],hd=isDay?MILAD_DAY_HADITH:MILAD_HADITH[idx%7];
+  var hj=hij(today),dots='';
+  for(i=0;i<7;i++)dots+='<span class="'+(i===idx?'on ':'')+(i===milIdx?'mil':'')+'"></span>';
+  el.innerHTML='<div class="mw" style="--c1:'+th.c1+';--c2:'+th.c2+';--acc:'+th.acc+'">'
+    +'<span class="mw-tag">'+(isDay?'\u2726 MILAD MUBARAK \u2726':'MILAD WEEK \u2022 DAY '+(idx+1)+' OF 7')+'</span>'
+    +'<div class="mw-bis">\uFDFD</div>'
+    +'<div class="mw-title">Celebrating the Life of<br>Hadhrat Muhammad Mustafa<br><span style="font-size:.82rem;font-weight:600;color:var(--acc)">Sallallahu Alayhi Wassalam</span></div>'
+    +'<div class="mw-sub">'+(isDay?'Today is the blessed 12th of Rabi ul Awwal':'The blessed week of 12th Rabi ul Awwal')+'</div>'
+    +'<div class="mw-date">'+today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+      +(hj?'<br>'+ord(hj.d)+' '+HIJRI_MONTHS[hj.m-1]+' '+hj.y+' AH':'')+'</div>'
+    +'<div class="mw-card"><div class="hd">\u2726 HADITH OF THE DAY</div><div class="q">\u201C'+hd.t+'\u201D</div><div class="src">'+hd.s+'</div></div>'
+    +'<div class="mw-sal">Sallu alal Habib \uD83C\uDF39</div>'
+    +'<div class="mw-dots">'+dots+'</div>'
+    +'</div>';
+}
+
 /* HEADER */
 function updateHeader(){
   renderAnniv();
+  renderMilad();
   document.getElementById('kn').textContent=kh;
   document.getElementById('ki').value=kh;
   document.getElementById('wr').textContent=weekRange(kh);
@@ -777,7 +857,7 @@ window.toggleNaat=function(){
 };
 
 /* TUESDAY THEME */
-function isTuesday(){var l=londonNow();return l.getFullYear()===2026&&l.getMonth()===7&&l.getDate()===25;}
+function isTuesday(){var h=hij(miladToday());return !!(h&&h.m===3&&h.d===12);}
 function applyTuesdayTheme(){
   if(!isTuesday())return;
   document.getElementById('tue-wrap').style.display='block';
@@ -982,6 +1062,7 @@ function subscribe(){
 
 /* INIT */
 buildMemorial();
+renderMilad();
 applyTuesdayTheme();
 sb.from('qk_config').select('khatam_number').eq('id',1).single().then(function(r){
   if(r.data)kh=r.data.khatam_number;
