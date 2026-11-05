@@ -395,7 +395,8 @@ var ANNIV=[
   {name:'Haji Gulam Bapu',g:[2020,10,30],h:[3,13]},
   {name:'Nuruddin Patel',g:[2013,6,27],h:[8,19]},
   {name:'Hajiyani Sharifa Nawab',g:[2013,11,3],h:[12,29]},
-  {name:'Hajiyani Ayesha Bapu',g:[2001,12,13],h:[9,27]}
+  {name:'Hajiyani Ayesha Bapu',g:[2001,12,13],h:[9,27]},
+  {name:'Haji Ismail Mohmed Bapu',g:[1988,2,14],h:[6,25],approx:true}
 ];
 var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function ord(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
@@ -426,7 +427,7 @@ function annivFor(k){
       gYears:gDay?gDay.getFullYear()-a.g[0]:null,
       hYears:(hDay&&ph)?hij(hDay).y-ph.y:null,
       gText:a.g[2]+' '+MONTHS[a.g[1]-1]+' '+a.g[0],
-      hText:ord(a.h[1])+' '+HIJRI_MONTHS[a.h[0]-1]
+      hText:ord(a.h[1])+' '+HIJRI_MONTHS[a.h[0]-1]+(a.approx?' (approx.)':'')
     });
   });
   return out;
