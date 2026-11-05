@@ -396,7 +396,8 @@ var ANNIV=[
   {name:'Nuruddin Patel',g:[2013,6,27],h:[8,19]},
   {name:'Hajiyani Sharifa Nawab',g:[2013,11,3],h:[12,29]},
   {name:'Hajiyani Ayesha Bapu',g:[2001,12,13],h:[9,27]},
-  {name:'Haji Ismail Mohmed Bapu',g:[1988,2,14],h:[6,25],approx:true}
+  {name:'Haji Ismail Mohmed Bapu',g:[1988,2,14],h:[6,25],approx:true},
+  {name:'Haji Adam Issa Sheriwala',g:[1997,9,4],gTo:10,h:[5,1],hTo:7,approx:true}
 ];
 var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function ord(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
@@ -417,8 +418,8 @@ function annivFor(k){
   ANNIV.forEach(function(a){
     var gDay=null,hDay=null;
     days.forEach(function(d){
-      if(d.getMonth()+1===a.g[1]&&d.getDate()===a.g[2])gDay=d;
-      var h=hij(d);if(h&&h.m===a.h[0]&&h.d===a.h[1])hDay=d;
+      if(d.getMonth()+1===a.g[1]&&d.getDate()>=a.g[2]&&d.getDate()<=(a.gTo||a.g[2]))gDay=d;
+      var h=hij(d);if(h&&h.m===a.h[0]&&h.d>=a.h[1]&&h.d<=(a.hTo||a.h[1]))hDay=d;
     });
     if(!gDay&&!hDay)return;
     var pass=new Date(a.g[0],a.g[1]-1,a.g[2],12),ph=hij(pass);
@@ -426,8 +427,8 @@ function annivFor(k){
       name:a.name,gDay:gDay,hDay:hDay,
       gYears:gDay?gDay.getFullYear()-a.g[0]:null,
       hYears:(hDay&&ph)?hij(hDay).y-ph.y:null,
-      gText:a.g[2]+' '+MONTHS[a.g[1]-1]+' '+a.g[0],
-      hText:ord(a.h[1])+' '+HIJRI_MONTHS[a.h[0]-1]+(a.approx?' (approx.)':'')
+      gText:a.g[2]+(a.gTo?'\u2013'+a.gTo:'')+' '+MONTHS[a.g[1]-1]+' '+a.g[0]+(a.gTo?' (approx.)':''),
+      hText:ord(a.h[1])+(a.hTo?'\u2013'+ord(a.hTo):'')+' '+HIJRI_MONTHS[a.h[0]-1]+(a.approx?' (approx.)':'')
     });
   });
   return out;
