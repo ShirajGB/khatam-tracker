@@ -186,6 +186,23 @@ td{padding:9px 7px;vertical-align:middle}
 .minaret::before{content:'';width:10px;height:20px;background:linear-gradient(180deg,#FFD700,#c9a84c);border-radius:5px 5px 0 0;display:block;box-shadow:0 0 8px rgba(255,215,0,.4)}
 .m-left{height:60px}.m-right{height:60px}.m-mid-l{height:45px;margin-left:30px}.m-mid-r{height:45px;margin-right:30px}
 .dome-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:140px;height:60px;background:radial-gradient(ellipse,rgba(26,122,58,.25),transparent 70%);pointer-events:none}
+/* ANNIVERSARY COMMEMORATION */
+.anv{position:relative;overflow:hidden;text-align:center;padding:18px 14px 16px;color:#fff;background:radial-gradient(ellipse at 50% 0%,#1f7a47,#0d2b1a 70%);border-top:3px solid #FFD700;border-bottom:3px solid #FFD700;box-shadow:inset 0 0 30px rgba(255,215,0,.28),0 4px 18px rgba(0,0,0,.25)}
+.anv+.anv{border-top:1px solid rgba(255,215,0,.5)}
+.anv::before{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,215,0,.18),transparent);animation:anvSweep 5s ease-in-out infinite;pointer-events:none}
+@keyframes anvSweep{0%{left:-60%}60%,100%{left:130%}}
+@keyframes anvPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,.65)}50%{box-shadow:0 0 0 9px rgba(255,215,0,0)}}
+.anv-tag{display:inline-block;background:#FFD700;color:#0d2b1a;font-weight:800;font-size:.66rem;letter-spacing:1.8px;padding:4px 14px;border-radius:20px;animation:anvPulse 2s infinite}
+.anv-ar{font-size:1.2rem;color:#FFD700;margin:10px 0 2px;line-height:1.7;direction:rtl}
+.anv-lbl{font-size:.72rem;color:#cfe8d8;letter-spacing:.6px;margin-top:2px}
+.anv-name{font-size:1.5rem;font-weight:800;color:#fff;margin:4px 0 2px;text-shadow:0 0 14px rgba(255,215,0,.55)}
+.anv-n{font-size:.9rem;font-weight:700;color:#FFD700;margin-bottom:8px}
+.anv-dates{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0 10px}
+.anv-d{background:rgba(255,255,255,.08);border:1px solid rgba(255,215,0,.35);border-radius:10px;padding:6px 11px;font-size:.72rem;color:#e8f5ec;line-height:1.35}
+.anv-d b{display:block;color:#FFD700;font-size:.62rem;letter-spacing:1px;text-transform:uppercase}
+.anv-d.hit{background:rgba(255,215,0,.18);border-color:#FFD700}
+.anv-dua{font-size:.74rem;font-style:italic;color:#d6ecde;margin:2px auto 10px;max-width:340px;line-height:1.5}
+.anv-share{display:inline-block;background:#25d366;color:#fff;font-weight:700;font-size:.78rem;padding:8px 18px;border-radius:22px;text-decoration:none}
 </style>
 </head>
 <body>
@@ -198,6 +215,9 @@ td{padding:9px 7px;vertical-align:middle}
 <div class="memorial">
   <div class="memorial-track" id="memorial-track"></div>
 </div>
+
+<!-- ANNIVERSARY COMMEMORATION (auto-shown in the week of a passing, Gregorian or Islamic) -->
+<div id="anniv-wrap"></div>
 
 <!-- TUESDAY COMMEMORATIVE THEME -->
 <div class="tue-wrap" id="tue-wrap">
@@ -365,13 +385,111 @@ var DECEASED=[
 var sb=window.supabase.createClient(SB_URL,SB_KEY);
 var kh=394,mb=[],cp={},rm={},allComps=[],activeTab='week';
 
+/* ANNIVERSARIES
+   g=[year,month,day] Gregorian date of passing, h=[islamic month,islamic day].
+   The commemoration shows in any khatam week containing the Gregorian date OR the Islamic date.
+   HIJRI_OFFSET shifts the Islamic calendar by whole days to match local moon sighting (try 1 or -1). */
+var HIJRI_OFFSET=0;
+var HIJRI_MONTHS=['Muharram','Safar','Rabi ul Awwal','Rabi ul Thani','Jumada al-Ula','Jumada al-Thani','Rajab','Shaban','Ramadan','Shawwal','Dhul Qadah','Dhul Hijjah'];
+var ANNIV=[
+  {name:'Haji Gulam Bapu',g:[2020,10,30],h:[3,13]},
+  {name:'Nuruddin Patel',g:[2013,6,27],h:[8,19]},
+  {name:'Hajiyani Sharifa Nawab',g:[2013,11,3],h:[12,29]},
+  {name:'Hajiyani Ayesha Bapu',g:[2001,12,13],h:[9,27]}
+];
+var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function ord(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+function hij(d){
+  try{
+    var dd=new Date(d.getTime()+HIJRI_OFFSET*864e5),o={};
+    new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric',year:'numeric'})
+      .formatToParts(dd).forEach(function(p){o[p.type]=parseInt(p.value,10);});
+    return{d:o.day,m:o.month,y:o.relatedYear||o.year};
+  }catch(e){return null;}
+}
+function khatamDays(k){
+  var days=[];for(var i=0;i<7;i++)days.push(new Date(2026,7,18+(k-394)*7+i,12));
+  return days;
+}
+function annivFor(k){
+  var days=khatamDays(k),out=[];
+  ANNIV.forEach(function(a){
+    var gDay=null,hDay=null;
+    days.forEach(function(d){
+      if(d.getMonth()+1===a.g[1]&&d.getDate()===a.g[2])gDay=d;
+      var h=hij(d);if(h&&h.m===a.h[0]&&h.d===a.h[1])hDay=d;
+    });
+    if(!gDay&&!hDay)return;
+    var pass=new Date(a.g[0],a.g[1]-1,a.g[2],12),ph=hij(pass);
+    out.push({
+      name:a.name,gDay:gDay,hDay:hDay,
+      gYears:gDay?gDay.getFullYear()-a.g[0]:null,
+      hYears:(hDay&&ph)?hij(hDay).y-ph.y:null,
+      gText:a.g[2]+' '+MONTHS[a.g[1]-1]+' '+a.g[0],
+      hText:ord(a.h[1])+' '+HIJRI_MONTHS[a.h[0]-1]
+    });
+  });
+  return out;
+}
+function annivKh(){
+  var q=parseInt(new URLSearchParams(location.search).get('annivKhatam'),10);
+  return q>0?q:kh;
+}
+function annivYears(a){return a.gYears!==null?a.gYears:a.hYears;}
+function annivDayText(d){return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});}
+function annivGroupText(list){
+  var t='🕯️ *Anniversary Remembrance — Khatam '+annivKh()+'*\n\nAssalamu Alaikum wa rahmatullahi wa barakatuhu 🤲\n\n';
+  list.forEach(function(a){
+    t+='This week marks the *'+ord(annivYears(a))+' anniversary* of the passing of *'+a.name+'*\n'
+      +'📅 '+a.gText+' • '+a.hText+'\n\n';
+  });
+  t+='Please dedicate this week’s sipara especially to them, recite Surah Fatiha and make dua for their forgiveness and the highest ranks in Jannah. Ameen.\n\n'
+    +'إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ\n\n'
+    +'Sallu alal Habib 🌹\nSallallahu alayhi wa sallam 🌙';
+  return t;
+}
+function annivWaBlock(list){
+  return list.map(function(a){
+    return '🕯️ *This week is the '+ord(annivYears(a))+' anniversary of '+a.name+'* ('+a.gText+' • '+a.hText+'). Please dedicate your sipara especially to them and make dua for them 🤲';
+  }).join('\n');
+}
+var ANNIV_NOW=[],annivSig='';
+function renderAnniv(){
+  ANNIV_NOW=annivFor(annivKh());
+  var sig=annivKh()+'|'+ANNIV_NOW.map(function(a){return a.name;}).join(',');
+  if(sig===annivSig)return;
+  annivSig=sig;
+  var el=document.getElementById('anniv-wrap');
+  if(!ANNIV_NOW.length){el.innerHTML='';buildMemorial();return;}
+  var html=ANNIV_NOW.map(function(a){
+    var n=annivYears(a);
+    return '<div class="anv">'
+      +'<span class="anv-tag">✦ ANNIVERSARY WEEK ✦</span>'
+      +'<div class="anv-ar">إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ</div>'
+      +'<div class="anv-lbl">This week we remember</div>'
+      +'<div class="anv-name">'+a.name+'</div>'
+      +'<div class="anv-n">'+ord(n)+' Anniversary</div>'
+      +'<div class="anv-dates">'
+        +'<div class="anv-d'+(a.gDay?' hit':'')+'"><b>Gregorian</b>'+a.gText+(a.gDay?'<br>This week: '+annivDayText(a.gDay):'')+'</div>'
+        +'<div class="anv-d'+(a.hDay?' hit':'')+'"><b>Islamic</b>'+a.hText+(a.hDay?'<br>This week: '+annivDayText(a.hDay):'')+'</div>'
+      +'</div>'
+      +'<div class="anv-dua">Khatam '+annivKh()+' is dedicated especially to them. Please recite your sipara with their name in your heart.</div>'
+      +'</div>';
+  }).join('');
+  html+='<div class="anv" style="padding:8px 14px 12px;border-top:none"><a class="anv-share" target="_blank" href="https://wa.me/?text='+encodeURIComponent(annivGroupText(ANNIV_NOW))+'">📣 Share anniversary message to group</a></div>';
+  el.innerHTML=html;
+  buildMemorial();
+}
+
 /* MEMORIAL TICKER */
 function buildMemorial(){
   var propSeg='<span class="memorial-seg">'
     +'<span class="lbl" style="color:#b8960c">&#9632;</span>'
     +'<span class="name" style="color:#FFD700;font-weight:800;font-size:.8rem">'+PROPHET+'</span>'
     +'<span class="dot" style="color:#b8960c">&#10022;</span></span>';
+  var annivNames=ANNIV_NOW.map(function(a){return a.name;});
   var decSeg=DECEASED.map(function(n){
+    if(annivNames.indexOf(n)>-1)return '<span class="memorial-seg"><span class="lbl" style="color:#FFD700;font-weight:800">&#10022; ANNIVERSARY</span><span class="name" style="color:#FFD700;font-weight:800;font-size:.85rem">'+n+'</span><span class="dot">&#10022;</span></span>';
     return '<span class="memorial-seg"><span class="lbl">Al-Fatiha</span><span class="name">'+n+'</span><span class="dot">&#10022;</span></span>';
   }).join('');
   var full=propSeg+decSeg;
@@ -398,7 +516,7 @@ function dayName(){var d=['Sunday','Monday','Tuesday','Wednesday','Thursday','Fr
 /* CALCULATIONS */
 function sp(p){return((kh-1+p-1)%30)+1;}
 function weekRange(k){
-  var b=new Date(2026,7,18),s=new Date(b.getTime()+(k-394)*7*864e5),e=new Date(s.getTime()+7*864e5);
+  var s=new Date(2026,7,18+(k-394)*7,12),e=new Date(2026,7,18+(k-394)*7+7,12);
   var f=function(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});};
   return f(s)+' - '+f(e);
 }
@@ -456,20 +574,27 @@ function wedTemplates(name,sipara,main,others,remaining,total){
 }
 function waUrl(phone,name,sipara,isSun,remaining,total){
   var np=normalizePhone(phone);if(!np)return null;
+  var annNames=ANNIV_NOW.map(function(a){return a.name;});
   var shuffled=DECEASED.slice().sort(function(){return Math.random()-.5;});
-  var main=shuffled[0];
-  var others=shuffled.slice(1,4).join(', ');
+  var rest=shuffled.filter(function(n){return annNames.indexOf(n)<0;});
+  var main=annNames.length?annNames.join(' & '):shuffled[0];
+  var others=(annNames.length?rest:shuffled.slice(1)).slice(0,3).join(', ');
   var msg;
   if(isSun){
     msg=sunTemplates(name,sipara,main,others);
   } else {
     msg=wedTemplates(name,sipara,main,others,remaining||0,total||30);
   }
+  if(ANNIV_NOW.length){
+    var cut=msg.indexOf('\n\n');
+    if(cut>-1)msg=msg.slice(0,cut+2)+annivWaBlock(ANNIV_NOW)+'\n\n'+msg.slice(cut+2);
+  }
   return'https://wa.me/'+np+'?text='+encodeURIComponent(msg);
 }
 
 /* HEADER */
 function updateHeader(){
+  renderAnniv();
   document.getElementById('kn').textContent=kh;
   document.getElementById('ki').value=kh;
   document.getElementById('wr').textContent=weekRange(kh);
